@@ -1,8 +1,6 @@
 @extends('base_admin')
 @section('title', 'Add a Grant')
 
-
-
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -52,6 +50,18 @@
                                 <option value="Loan receive">Received</option>
                                 <option value="Loan not receive">Not Received</option>
                             </select>
+                        </div>
+
+                        <!-- Start-up Kits Items Received field -->
+                        <div class="form-group">
+                            <label for="start_up_kits_items_received">Start-up Kits Items Received</label>
+                            <textarea name="start_up_kits_items_received" id="start_up_kits_items_received" class="form-control" rows="3" placeholder="Enter items received"></textarea>
+                        </div>
+
+                        <!-- State of Farm Location field -->
+                        <div class="form-group">
+                            <label for="state_of_farm_location">State of Farm Location</label>
+                            <textarea name="state_of_farm_location" id="state_of_farm_location" class="form-control" rows="3" placeholder="Enter state or location"></textarea>
                         </div>
 
                         <!-- Promotion field -->

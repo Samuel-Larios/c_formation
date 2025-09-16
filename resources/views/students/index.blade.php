@@ -161,6 +161,8 @@
         <h1>Student List</h1>
         <a href="{{ route('students.create') }}" class="btn btn-primary">Add Student</a>
 
+
+
         <!-- Print button -->
         <div class="text-end mb-3">
             <button onclick="window.print()" class="btn btn-success">
@@ -380,7 +382,7 @@
  --}}
 
 
-        <div class="card mb-4 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+        {{-- <div class="card mb-4 shadow-sm" style="border-radius: 12px; overflow: hidden;">
             <div class="card-header text-white" style="background: linear-gradient(90deg, #4e73df, #1cc88a);">
                 <h5 class="mb-0">Gender Statistics (All Students)</h5>
             </div>
@@ -445,8 +447,103 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> --}}
 
+        <div class="card mb-4 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+            <div class="card-header text-white" style="background: linear-gradient(90deg, #4e73df, #1cc88a);">
+                <h5 class="mb-0">Gender Statistics
+                    @if ($selectedPromotionName || $selectedSpecialiteName || $selectedState || $selectedSexe)
+                        (Filtered Results)
+                    @else
+                        (All Students)
+                    @endif
+                </h5>
+            </div>
+            <div class="card-body bg-light">
+                @php
+                    $malePercentage = $totalStudents > 0 ? round(($maleCount / $totalStudents) * 100, 2) : 0;
+                    $femalePercentage = $totalStudents > 0 ? round(($femaleCount / $totalStudents) * 100, 2) : 0;
+                @endphp
+
+                <table class="table table-bordered text-center"
+                    style="background-color: white; border-radius: 8px; overflow: hidden;">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-primary">Gender</th>
+                            <th class="text-success">Count</th>
+                            <th class="text-info">Percentage</th>
+                            <th class="text-secondary">Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="badge bg-primary px-3 py-2">Male</span>
+                            </td>
+                            <td class="text-success fw-bold">{{ $maleCount }}</td>
+                            <td class="text-info fw-bold">{{ $malePercentage }}%</td>
+                            <td>
+                                <div class="progress" style="height: 20px; border-radius: 10px;">
+                                    <div class="progress-bar bg-primary" role="progressbar"
+                                        style="width: {{ $malePercentage }}%;" aria-valuenow="{{ $malePercentage }}"
+                                        aria-valuemin="0" aria-valuemax="100">
+                                        {{ $malePercentage }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <td>
+                            <span class="badge px-3 py-2 text-white" style="background-color: #e83e8c;">Female</span>
+                        </td>
+                        <td class="text-success fw-bold">{{ $femaleCount }}</td>
+                        <td class="text-info fw-bold">{{ $femalePercentage }}%</td>
+                        <td>
+                            <div class="progress" style="height: 20px; border-radius: 10px;">
+                                <div class="progress-bar"
+                                    style="background-color: #e83e8c; width: {{ $femalePercentage }}%;"
+                                    role="progressbar" aria-valuenow="{{ $femalePercentage }}" aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    {{ $femalePercentage }}%
+                                </div>
+                            </div>
+                        </td>
+                        </tr>
+                        <tr class="table-active">
+                            <td><strong>Total</strong></td>
+                            <td><strong>{{ $totalStudents }}</strong></td>
+                            <td><strong>100%</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                @if ($selectedPromotionName || $selectedSpecialiteName || $selectedState || $selectedSexe)
+                   <div class="text-center mt-3">
+    <div class="row justify-content-center">
+        <div class="col-auto mb-2">
+            <a href="{{ route('students.index') }}" class="btn btn-outline-secondary w-100">
+                <i class="fas fa-sync-alt me-2"></i>Reset to All Students
+            </a>
+        </div>
+        <div class="col-auto mb-2">
+            <form action="{{ route('students.export') }}" method="GET" class="d-inline">
+                <input type="hidden" name="promotion_id" value="{{ request('promotion_id') }}">
+                <input type="hidden" name="sexe" value="{{ request('sexe') }}">
+                <input type="hidden" name="specialite_id" value="{{ request('specialite_id') }}">
+                <input type="hidden" name="state_of_origin" value="{{ request('state_of_origin') }}">
+                <input type="hidden" name="search" value="{{ request('search') }}">
+                <input type="hidden" name="language" value="en">
+                <input type="hidden" name="format" value="excel">
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="fas fa-file-excel me-2"></i>Export to Excel
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+                @endif
+            </div>
+        </div>
 
         <!-- Student table -->
         <table class="table mt-3 table-hover">
@@ -491,7 +588,8 @@
                             <div>
                                 <strong>Birthday:</strong>
                                 @if ($student->date_naissance)
-                                    {{ \Carbon\Carbon::parse($student->date_naissance)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($student->date_naissance)->format('d M Y') }} (Age:
+                                    {{ \Carbon\Carbon::parse($student->date_naissance)->age }} years)
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif

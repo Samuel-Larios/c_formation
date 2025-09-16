@@ -177,4 +177,54 @@ class StatisticsController extends Controller
 
         return view('statistics.student', compact('student'));
     }
+
+    public function promotionStatistics(Request $request)
+    {
+        $promotions = Promotion::orderBy('num_promotion', 'desc')->get();
+        $lastFivePromotions = $promotions->take(5);
+        $lastFiveData = [];
+        foreach ($lastFivePromotions as $promotion) {
+            $count = Student::whereHas('promotions', function ($query) use ($promotion) {
+                $query->where('promotion_id', $promotion->id);
+            })->count();
+            $lastFiveData[] = [
+                'promotion' => $promotion->num_promotion,
+                'student_count' => $count,
+            ];
+        }
+
+        $selectedPromotionId = $request->get('promotion');
+        $expectedStudents = $request->get('expected', 0);
+        $currentStudentsCount = 0;
+        if ($selectedPromotionId) {
+            $currentStudentsCount = Student::whereHas('promotions', function ($query) use ($selectedPromotionId) {
+                $query->where('promotion_id', $selectedPromotionId);
+            })->count();
+        }
+
+        return view('statistics.promotion-statistics', compact('promotions', 'lastFiveData', 'selectedPromotionId', 'expectedStudents', 'currentStudentsCount'));
+    }
+
+    public function getPromotionGenderDistribution(Request $request)
+    {
+        $promotionId = $request->get('promotion_id');
+
+        if ($promotionId) {
+            $maleCount = Student::whereHas('promotions', function ($query) use ($promotionId) {
+                $query->where('promotion_id', $promotionId);
+            })->where('sexe', 'M')->count();
+
+            $femaleCount = Student::whereHas('promotions', function ($query) use ($promotionId) {
+                $query->where('promotion_id', $promotionId);
+            })->where('sexe', 'F')->count();
+        } else {
+            $maleCount = Student::where('sexe', 'M')->count();
+            $femaleCount = Student::where('sexe', 'F')->count();
+        }
+
+        return response()->json([
+            'male' => $maleCount,
+            'female' => $femaleCount,
+        ]);
+    }
 }

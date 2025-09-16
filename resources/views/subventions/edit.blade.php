@@ -53,6 +53,18 @@
                             </select>
                         </div>
 
+                        <!-- Start-up Kits Items Received field -->
+                        <div class="form-group">
+                            <label for="start_up_kits_items_received">Start-up Kits Items Received</label>
+                            <textarea name="start_up_kits_items_received" id="start_up_kits_items_received" class="form-control" rows="3" placeholder="Enter items received">{{ $subvention->start_up_kits_items_received }}</textarea>
+                        </div>
+
+                        <!-- State of Farm Location field -->
+                        <div class="form-group">
+                            <label for="state_of_farm_location">State of Farm Location</label>
+                            <textarea name="state_of_farm_location" id="state_of_farm_location" class="form-control" rows="3" placeholder="Enter state or location">{{ $subvention->state_of_farm_location }}</textarea>
+                        </div>
+
                         <!-- Promotion field -->
                         <div class="form-group">
                             <label for="promotion_id">Promotion</label>
@@ -86,6 +98,7 @@
 
                         <!-- Submit button -->
                         <button type="submit" class="btn btn-primary">Update</button>
+                        <a href="{{ route('subventions.index') }}" class="btn btn-secondary">Back</a>
                     </form>
                 </div>
             </div>

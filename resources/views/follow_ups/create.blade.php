@@ -19,7 +19,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('follow_ups.store') }}" method="POST">
+                    <form action="{{ route('follow_ups.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Farm Visits -->
@@ -41,13 +41,13 @@
                         <!-- Sharing of Impact Stories -->
                         <div class="form-group">
                             <label for="sharing_of_impact_stories">Sharing of Impact Stories</label>
-                            <input type="text" name="sharing_of_impact_stories" id="sharing_of_impact_stories" class="form-control" required>
+                            <textarea name="sharing_of_impact_stories" id="sharing_of_impact_stories" class="form-control" rows="4" required></textarea>
                         </div>
 
                         <!-- Back-stopping -->
                         <div class="form-group">
                             <label for="back_stopping">Back-stopping</label>
-                            <input type="text" name="back_stopping" id="back_stopping" class="form-control" required>
+                            <textarea name="back_stopping" id="back_stopping" class="form-control" rows="4" required></textarea>
                         </div>
 
                         <!-- Promotion -->
@@ -70,6 +70,13 @@
                             </select>
                         </div>
 
+                        <!-- Images -->
+                        <div class="form-group">
+                            <label for="images">Images (up to 15)</label>
+                            <input type="file" name="images[]" id="images" class="form-control" multiple required>
+                            <small class="form-text text-muted">Select up to 15 images.</small>
+                        </div>
+
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Save</button>
                         <a href="{{ route('follow_ups.index') }}" class="btn btn-secondary">Back</a>
@@ -84,8 +91,8 @@
         let promotionId = this.value;
         let studentSelect = document.getElementById('student_id');
 
-        // Effacer la liste des étudiants
-        studentSelect.innerHTML = '<option value="">Sélectionner un étudiant</option>';
+        // Clear student list
+        studentSelect.innerHTML = '<option value="">Select a student</option>';
 
         if (promotionId) {
             fetch(`/follow_ups/students/${promotionId}`)
@@ -98,7 +105,7 @@
                         studentSelect.appendChild(option);
                     });
                 })
-                .catch(error => console.error('Erreur lors du chargement des étudiants :', error));
+                .catch(error => console.error('Error loading students:', error));
         }
     });
 </script>

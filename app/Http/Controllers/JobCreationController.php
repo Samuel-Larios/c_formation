@@ -10,17 +10,39 @@ use Illuminate\Support\Facades\Auth;
 class JobCreationController extends Controller
 {
     // Afficher la liste des job creations
-    public function index()
+    public function index(Request $request)
     {
         // Récupérer l'utilisateur connecté
         $user = Auth::user();
 
-        // Récupérer les jobs liés aux étudiants du site de l'utilisateur connecté
-        $jobCreations = JobCreation::whereHas('student', function ($query) use ($user) {
-            $query->where('site_id', $user->site_id);
-        })->latest()->paginate(10);
+        // Récupérer la promotion sélectionnée pour le filtre
+        $promotionId = $request->input('promotion_id');
 
-        return view('job-creations.index', compact('jobCreations'));
+        // Construire la requête pour récupérer les jobs liés aux étudiants du site de l'utilisateur connecté
+        $query = JobCreation::whereHas('student', function ($query) use ($user, $promotionId) {
+            $query->where('site_id', $user->site_id);
+            if ($promotionId) {
+                $query->whereHas('promotions', function ($q) use ($promotionId) {
+                    $q->where('promotions.id', $promotionId);
+                });
+            }
+        });
+
+        $jobCreations = $query->latest()->paginate(10);
+
+        // Calculer le nombre d'hommes et de femmes par promotion pour les job creations
+        $genderCounts = [];
+        if ($promotionId) {
+            $genderCounts = (clone $query)->selectRaw('sexe, COUNT(*) as count')
+                ->groupBy('sexe')
+                ->pluck('count', 'sexe')
+                ->toArray();
+        }
+
+        // Récupérer toutes les promotions pour le filtre, filtrées par site de l'utilisateur
+        $promotions = \App\Models\Promotion::where('site_id', $user->site_id)->get();
+
+        return view('job-creations.index', compact('jobCreations', 'promotions', 'genderCounts', 'promotionId'));
     }
 
     // Afficher le formulaire pour créer un job creation
@@ -43,6 +65,7 @@ class JobCreationController extends Controller
             'jobs' => 'required|array',
             'jobs.*.nom' => 'required|string|max:255',
             'jobs.*.tel' => 'required|string|max:15',
+            'jobs.*.sexe' => 'required|string|in:Homme,Femme',
         ]);
 
         // Récupérer l'utilisateur connecté
@@ -77,12 +100,14 @@ class JobCreationController extends Controller
             'student_id' => 'required|exists:students,id',
             'nom' => 'required|string|max:255',
             'tel' => 'required|string|max:15',
+            'sexe' => 'required|string|in:Homme,Femme',
         ]);
 
         $jobCreation->update([
             'student_id' => $request->student_id,
             'nom' => $request->nom,
             'tel' => $request->tel,
+            'sexe' => $request->sexe,
         ]);
 
         return redirect()->route('jobcreations.index')->with('success', 'Job creation successfully updated.');

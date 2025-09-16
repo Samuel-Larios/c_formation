@@ -30,4 +30,9 @@ class FollowUp extends Model
     {
         return $this->belongsTo(Site::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(ImageFollowUp::class);
+    }
 }

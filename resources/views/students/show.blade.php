@@ -15,7 +15,21 @@
     <!-- Card to display student details -->
     <div class="card shadow">
         <div class="card-body">
-            <h5 class="card-title text-primary">{{ $student->name }}</h5>
+            <!-- Photo Section -->
+            <div class="text-center mb-4">
+                @if($student->profile_photo)
+                    <img src="{{ asset('storage/' . $student->profile_photo) }}"
+                         alt="Photo de {{ $student->first_name }} {{ $student->last_name }}"
+                         class="img-fluid rounded-circle"
+                         style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #007bff;">
+                @else
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
+                         style="width: 150px; height: 150px; border: 3px solid #6c757d;">
+                        <i class="fas fa-user fa-3x text-secondary"></i>
+                    </div>
+                @endif
+                <h5 class="card-title text-primary mt-3">{{ $student->first_name }} {{ $student->last_name }}</h5>
+            </div>
             <hr>
 
             <div class="row">

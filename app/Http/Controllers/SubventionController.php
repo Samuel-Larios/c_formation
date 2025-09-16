@@ -1,38 +1,44 @@
 <?php
 
-namespace App\Models;
-
 namespace App\Http\Controllers;
-
-
 
 use App\Models\Student;
 use App\Models\Promotion;
 use App\Models\Subvention;
+use App\Exports\SubventionsExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SubventionController extends Controller
 {
     /**
-     * Afficher la liste des subventions.
+     * Display the list of subsidies.
      */
     public function index()
     {
         // Récupérer le site_id de l'utilisateur connecté
         $siteId = Auth::user()->site_id;
 
-        // Charger les subventions liées au site de l'utilisateur
+        // Récupérer les promotions liées au site de l'utilisateur
+        $promotions = Promotion::where('site_id', $siteId)->get();
+
+        // Charger les subventions liées au site de l'utilisateur, avec filtrage par promotion si spécifié
         $subventions = Subvention::with('student')
             ->where('site_id', $siteId)
+            ->when(request('promotion'), function($query) {
+                $query->whereHas('student.promotions', function($q) {
+                    $q->where('promotion_id', request('promotion'));
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('subventions.index', compact('subventions'));
+        return view('subventions.index', compact('subventions', 'promotions'));
     }
 
     /**
-     * Afficher le formulaire de création d'une subvention.
+     * Display the form to create a subsidy.
      */
     public function create()
     {
@@ -46,7 +52,7 @@ class SubventionController extends Controller
     }
 
     /**
-     * Récupérer les étudiants d'une promotion spécifique.
+     * Retrieve students from a specific promotion.
      */
     public function getStudentsByPromotion($promotionId)
     {
@@ -58,8 +64,9 @@ class SubventionController extends Controller
         return response()->json($students);
     }
 
-
-    //  Enregistrer une nouvelle subvention.
+    /**
+     * Save a new subsidy.
+     */
     public function store(Request $request)
     {
         // Validation des données du formulaire
@@ -68,6 +75,8 @@ class SubventionController extends Controller
             'grants' => 'nullable|string',
             'loan' => 'nullable|string',
             'date' => 'nullable|date',
+            'start_up_kits_items_received' => 'nullable|string',
+            'state_of_farm_location' => 'nullable|string',
             'student_id' => 'required|array', // Valider que student_id est un tableau
             'student_id.*' => 'exists:students,id', // Valider chaque élément du tableau
         ]);
@@ -85,6 +94,8 @@ class SubventionController extends Controller
                 'grants' => $validated['grants'],
                 'loan' => $validated['loan'],
                 'date' => $validated['date'],
+                'start_up_kits_items_received' => $validated['start_up_kits_items_received'],
+                'state_of_farm_location' => $validated['state_of_farm_location'],
                 'student_id' => $studentId,
                 'site_id' => $siteId,
             ]);
@@ -94,8 +105,9 @@ class SubventionController extends Controller
         return redirect()->route('subventions.index')->with('success', 'Grant(s) successfully added');
     }
 
-    // Afficher le formulaire de modification d'une subvention.
-
+    /**
+     * Display the form to edit a subsidy.
+     */
     public function edit($id)
     {
         // Récupérer la subvention
@@ -111,8 +123,9 @@ class SubventionController extends Controller
         return view('subventions.edit', compact('subvention', 'promotions', 'students'));
     }
 
-
-    //   Mettre à jour une subvention.
+    /**
+     * Update a subsidy.
+     */
     public function update(Request $request, $id)
     {
         // Récupérer la subvention
@@ -124,6 +137,8 @@ class SubventionController extends Controller
             'grants' => 'nullable|string',
             'loan' => 'nullable|string',
             'date' => 'nullable|date',
+            'start_up_kits_items_received' => 'nullable|string',
+            'state_of_farm_location' => 'nullable|string',
             'student_id' => 'required|exists:students,id',
         ]);
 
@@ -136,10 +151,12 @@ class SubventionController extends Controller
         // Mettre à jour la subvention
         $subvention->update($validated);
 
-        return redirect()->route('subventions.index')->with('success', 'Subvention mise à jour avec succès.');
+        return redirect()->route('subventions.index')->with('success', 'Subsidy updated successfully.');
     }
 
-    //  Supprimer une subvention.
+    /**
+     * Delete a subsidy.
+     */
     public function destroy($id)
     {
         // Récupérer le site_id de l'utilisateur connecté
@@ -152,5 +169,34 @@ class SubventionController extends Controller
         $subvention->delete();
 
         return redirect()->route('subventions.index')->with('success', 'Subsidy successfully removed.');
+    }
+
+    /**
+     * Display the details of a subsidy.
+     */
+    public function show($id)
+    {
+        // Récupérer le site_id de l'utilisateur connecté
+        $siteId = Auth::user()->site_id;
+
+        // Récupérer la subvention liée au site de l'utilisateur
+        $subvention = Subvention::with('student')->where('site_id', $siteId)->findOrFail($id);
+
+        return view('subventions.show', compact('subvention'));
+    }
+
+    /**
+     * Export subsidies to Excel based on selected promotion.
+     */
+    public function export(Request $request)
+    {
+        $request->validate([
+            'promotion' => 'nullable|exists:promotions,id',
+        ]);
+
+        $siteId = Auth::user()->site_id;
+        $promotionId = $request->promotion;
+
+        return Excel::download(new SubventionsExport($siteId, $promotionId), 'subventions.xlsx');
     }
 }

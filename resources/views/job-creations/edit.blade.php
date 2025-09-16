@@ -43,6 +43,14 @@
             <input type="text" name="tel" id="tel" class="form-control" value="{{ old('tel', $jobCreation->tel) }}" required>
         </div>
 
+        <div class="form-group">
+            <label for="sexe">Sexe:</label>
+            <select name="sexe" id="sexe" class="form-control" required>
+                <option value="Homme" {{ old('sexe', $jobCreation->sexe) == 'Homme' ? 'selected' : '' }}>Homme</option>
+                <option value="Femme" {{ old('sexe', $jobCreation->sexe) == 'Femme' ? 'selected' : '' }}>Femme</option>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-primary">Update</button>
         <a href="{{ route('jobcreations.index') }}" class="btn btn-secondary">Back</a>
     </form>

@@ -7,25 +7,60 @@ use App\Models\Promotion;
 use Illuminate\Http\Request;
 use App\Models\PromotionApprenant;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\PromotionApprenantExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PromotionApprenantController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $siteId = Auth::user()->site_id;
 
+        // Récupérer les filtres
+        $sexeFilter = $request->get('sexe');
+        $promotionFilter = $request->get('promotion_id');
+
         // Charger les promotions avec leurs étudiants triés par first_name
-        $promotions = Promotion::with(['students' => function($query) {
+        $promotionsQuery = Promotion::with(['students' => function($query) use ($sexeFilter) {
             $query->orderBy('first_name');
+            if ($sexeFilter) {
+                $query->where('sexe', $sexeFilter);
+            }
         }, 'promotionApprenants'])
             ->whereHas('promotionApprenants', function($query) use ($siteId) {
                 $query->where('site_id', $siteId);
             })
-            ->where('site_id', $siteId)
-            ->orderByDesc('created_at')
-            ->paginate(10);
+            ->where('site_id', $siteId);
 
-        return view('promotion_apprenant.index', compact('promotions'));
+        // Appliquer le filtre par promotion si spécifié
+        if ($promotionFilter) {
+            $promotionsQuery->where('id', $promotionFilter);
+        }
+
+        $promotions = $promotionsQuery->orderByDesc('created_at')->paginate(10);
+
+        // Récupérer toutes les promotions pour le filtre
+        $allPromotions = Promotion::where('site_id', $siteId)->orderByDesc('created_at')->get();
+
+        // Pagination des étudiants par promotion
+        $studentsPerPage = 5; // Nombre d'étudiants par page dans chaque promotion
+        $paginatedPromotions = $promotions->getCollection()->map(function ($promotion) use ($studentsPerPage, $request) {
+            $currentPage = $request->get('page_' . $promotion->id, 1);
+            $students = $promotion->students;
+            $paginatedStudents = new \Illuminate\Pagination\LengthAwarePaginator(
+                $students->forPage($currentPage, $studentsPerPage),
+                $students->count(),
+                $studentsPerPage,
+                $currentPage,
+                ['path' => $request->url(), 'pageName' => 'page_' . $promotion->id]
+            );
+            $promotion->paginated_students = $paginatedStudents;
+            return $promotion;
+        });
+
+        $promotions->setCollection($paginatedPromotions);
+
+        return view('promotion_apprenant.index', compact('promotions', 'allPromotions', 'sexeFilter', 'promotionFilter'));
     }
 
     public function create()
@@ -87,7 +122,7 @@ class PromotionApprenantController extends Controller
         PromotionApprenant::insert($dataToInsert);
 
         return redirect()->route('promotion_apprenant.index')
-            ->with('success', 'Les étudiants ont été ajoutés à la promotion avec succès.');
+            ->with('success', 'Students have been successfully added to the promotion.');
     }
 
     public function edit($id)
@@ -121,13 +156,13 @@ class PromotionApprenantController extends Controller
             ->exists();
 
         if ($exists) {
-            return back()->withErrors(['student_id' => 'Cet étudiant est déjà dans cette promotion.']);
+            return back()->withErrors(['student_id' => 'This student is already in this promotion.']);
         }
 
         $promotionApprenant->update($request->all());
 
         return redirect()->route('promotion_apprenant.index')
-            ->with('success', 'L\'association a été mise à jour avec succès.');
+            ->with('success', 'The association has been successfully updated.');
     }
 
     public function destroy(PromotionApprenant $promotionApprenant)
@@ -139,6 +174,16 @@ class PromotionApprenantController extends Controller
         $promotionApprenant->delete();
 
         return redirect()->route('promotion_apprenant.index')
-            ->with('success', 'L\'étudiant a été retiré de la promotion.');
+            ->with('success', 'The student has been removed from the promotion.');
+    }
+
+    public function export(Request $request)
+    {
+        $filters = [
+            'sexe' => $request->get('sexe'),
+            'promotion_id' => $request->get('promotion_id'),
+        ];
+
+        return Excel::download(new PromotionApprenantExport($filters), 'promotion_apprenants_' . date('Y-m-d_H-i-s') . '.xlsx');
     }
 }

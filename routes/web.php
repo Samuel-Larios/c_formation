@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\MatierController;
 use App\Http\Controllers\SalaryController;
@@ -68,7 +69,7 @@ Route::middleware('auth:student')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     Route::get('/sites', [SiteController::class, 'index'])->name('sites.index');
@@ -80,12 +81,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/sites/{site}', [SiteController::class, 'destroy'])->name('sites.destroy');
 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/students/export-import', [StudentController::class, 'exportImport'])->name('students.export-import');
+    Route::get('/students/passwords', \App\Livewire\StudentPasswords::class)->name('students.passwords');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+    Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
+    Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+    Route::post('/students/import/csv', [StudentController::class, 'importCsv'])->name('students.import.csv');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
     Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');
     Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
     Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/students/{student}/change-password', function ($studentId) {
+        return view('students.change-password', compact('studentId'));
+    })->name('students.change-password');
 
     Route::get('/specializations', [SpecializationController::class, 'index'])->name('specializations.index');
     Route::get('/specializations/create', [SpecializationController::class, 'create'])->name('specializations.create');
@@ -124,18 +133,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/salaries/{salary}/edit', [SalaryController::class, 'edit'])->name('salaries.edit');
     Route::put('/salaries/{salary}', [SalaryController::class, 'update'])->name('salaries.update');
     Route::delete('/salaries/{salary}', [SalaryController::class, 'destroy'])->name('salaries.destroy');
-    // SubventionController routes
-    Route::get('subventions', [SubventionController::class, 'index'])->name('subventions.index');
-    Route::get('subventions/create', [SubventionController::class, 'create'])->name('subventions.create');
-    Route::post('subventions', [SubventionController::class, 'store'])->name('subventions.store');
-    Route::get('subventions/{subvention}', [SubventionController::class, 'show'])->name('subventions.show');
-    Route::get('subventions/{subvention}/edit', [SubventionController::class, 'edit'])->name('subventions.edit');
-    Route::put('subventions/{subvention}', [SubventionController::class, 'update'])->name('subventions.update');
-    Route::delete('subventions/{subvention}', [SubventionController::class, 'destroy'])->name('subventions.destroy');
-    // SubventionController routes
-    Route::get('/subventions/create', [SubventionController::class, 'create'])->name('subventions.create');
-    Route::post('/subventions', [SubventionController::class, 'store'])->name('subventions.store');
-    Route::get('/subventions/students/{promotionId}', [SubventionController::class, 'getStudentsByPromotion']);
+    Route::post('/salaries/export', [SalaryController::class, 'export'])->name('salaries.export');
+// SubventionController routes
+Route::get('subventions', [SubventionController::class, 'index'])->name('subventions.index');
+Route::get('subventions/create', [SubventionController::class, 'create'])->name('subventions.create');
+Route::post('subventions', [SubventionController::class, 'store'])->name('subventions.store');
+Route::get('subventions/{subvention}', [SubventionController::class, 'show'])->name('subventions.show');
+Route::get('subventions/{subvention}/edit', [SubventionController::class, 'edit'])->name('subventions.edit');
+Route::put('subventions/{subvention}', [SubventionController::class, 'update'])->name('subventions.update');
+Route::delete('subventions/{subvention}', [SubventionController::class, 'destroy'])->name('subventions.destroy');
+Route::post('/subventions/export', [SubventionController::class, 'export'])->name('subventions.export');
+Route::get('/subventions/students/{promotionId}', [SubventionController::class, 'getStudentsByPromotion']);
     // PromotionApprenantController routes
     Route::get('utilisateurs', [UtilisateurController::class, 'index'])->name('utilisateurs.index');
     Route::get('utilisateurs/create', [UtilisateurController::class, 'create'])->name('utilisateurs.create');
@@ -166,6 +174,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/promotion-apprenant/{promotionApprenant}/edit', [PromotionApprenantController::class, 'edit'])->name('promotion_apprenant.edit');
     Route::put('/promotion-apprenant/{promotionApprenant}', [PromotionApprenantController::class, 'update'])->name('promotion_apprenant.update');
     Route::delete('/promotion-apprenant/{promotionApprenant}', [PromotionApprenantController::class, 'destroy'])->name('promotion_apprenant.destroy');
+    Route::post('/promotion-apprenant/export', [PromotionApprenantController::class, 'export'])->name('promotion_apprenant.export');
     // SpecialiteController routes
     Route::get('/specialites', [SpecialiteController::class, 'index'])->name('specialites.index');
     Route::get('/specialites/create', [SpecialiteController::class, 'create'])->name('specialites.create');
@@ -181,6 +190,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/follow_ups/{id}/edit', [FollowUpController::class, 'edit'])->name('follow_ups.edit');
     Route::put('/follow_ups/{id}', [FollowUpController::class, 'update'])->name('follow_ups.update');
     Route::delete('/follow_ups/{id}', [FollowUpController::class, 'destroy'])->name('follow_ups.destroy');
+    Route::post('/follow_ups/export', [FollowUpController::class, 'export'])->name('follow_ups.export');
     Route::get('/follow_ups/students/{promotionId}', [FollowUpController::class, 'getStudentsByPromotion']);
     // BusinessStatusController routes
     Route::get('/business_status', [BusinessStatusController::class, 'index'])->name('business_status.index');
@@ -192,6 +202,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/business_status/{id}', [BusinessStatusController::class, 'destroy'])->name('business_status.destroy');
     // StatisticsController routes
     Route::get('/statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+    Route::get('/promotion-statistics', [StatisticsController::class, 'promotionStatistics'])->name('promotion.statistics');
+    Route::get('/api/promotion-gender-distribution', [StatisticsController::class, 'getPromotionGenderDistribution'])->name('api.promotion.gender.distribution');
     Route::post('/statistics/filter-students', [StatisticsController::class, 'filterStudents'])->name('statistics.filter.students');
     Route::post('/statistics/filter-matiers', [StatisticsController::class, 'filterMatiers'])->name('statistics.filter.matiers');
     Route::post('/statistics/filter-users', [StatisticsController::class, 'filterUsers'])->name('statistics.filter.users');
@@ -240,9 +252,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/get-students-by-promotion', [PromotionApprenantController::class, 'getStudentsByPromotion'])->name('get_students_by_promotion');
     Route::get('/entities/get-students-by-site', [EntityController::class, 'getStudentsBySite'])->name('entities.getStudentsBySite');
     Route::get('/get-students-by-promotion', [SalaryController::class, 'getStudentsByPromotion'])->name('get_students_by_promotion');
-    // Dans web.php
-    Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
-    Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
 });
 
 // Admin routes
@@ -251,9 +260,4 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('utilisateurs', UtilisateurController::class);
     Route::get('/export-users', [ExportImportController::class, 'export'])->name('export.users');
     Route::post('/import-users', [ExportImportController::class, 'import'])->name('import.users');
-    Route::get('/export-users', [ExportImportController::class, 'export'])->name('export.users');
-    Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
-    Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/students/export', [StudentController::class, 'export'])->name('students.export');
 });

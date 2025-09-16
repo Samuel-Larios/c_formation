@@ -17,6 +17,7 @@ class JobCreation extends Model
     protected $fillable = [
         'nom',
         'tel',
+        'sexe',
         'student_id'
     ];
 

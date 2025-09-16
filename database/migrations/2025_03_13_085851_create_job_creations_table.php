@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('tel');
+            $table->string('sexe');
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->timestamps();
         });

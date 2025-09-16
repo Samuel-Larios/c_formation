@@ -9,7 +9,7 @@
     <form action="{{ route('job-creations.store') }}" method="POST">
         @csrf
 
-        <!-- Champ pour sélectionner un étudiant -->
+        <!-- Field to select a student -->
         <div class="form-group">
             <label for="student_id">Select Student:</label>
             <select name="student_id" id="student_id" class="form-control" required>
@@ -19,7 +19,7 @@
             </select>
         </div>
 
-        <!-- Champs pour les jobs -->
+        <!-- Fields for jobs -->
         <div id="job-fields">
             <div class="job-group">
                 <div class="form-group">
@@ -30,6 +30,14 @@
                 <div class="form-group">
                     <label for="tel">Phone:</label>
                     <input type="text" name="jobs[0][tel]" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sexe">Gender:</label>
+                    <select name="jobs[0][sexe]" class="form-control" required>
+                        <option value="Homme">Male</option>
+                        <option value="Femme">Female</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -48,9 +56,9 @@
         const index = document.querySelectorAll('.job-group').length;
 
         // Mettre à jour les noms des champs pour éviter les conflits
-        jobGroup.querySelectorAll('input').forEach(input => {
-            const name = input.getAttribute('name').replace(/\[\d\]/, `[${index}]`);
-            input.setAttribute('name', name);
+        jobGroup.querySelectorAll('input, select').forEach(element => {
+            const name = element.getAttribute('name').replace(/\[\d\]/, `[${index}]`);
+            element.setAttribute('name', name);
         });
 
         jobFields.appendChild(jobGroup);

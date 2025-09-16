@@ -9,20 +9,22 @@ class Subvention extends Model
 {
     use HasFactory;
 
-    // Spécifier explicitement le nom de la table si ce n'est pas le nom par défaut
-    protected $table = 'subvention'; // Correspond au nom de la table dans la base de données
+    // Specify the table name explicitly if it's not the default
+    protected $table = 'subvention'; // Corresponds to the table name in the database
 
-    // Spécifier les champs autorisés pour l'insertion en masse
+    // Specify the fields allowed for mass insertion
     protected $fillable = [
         'start_up_kits',
         'grants',
         'loan',
         'date',
+        'start_up_kits_items_received',
+        'state_of_farm_location',
         'student_id',
         'site_id',
     ];
 
-    // Relation avec le modèle Student (un étudiant peut avoir plusieurs subventions)
+    // Relationship with the Student model (a student can have multiple subsidies)
     public function student()
     {
         return $this->belongsTo(Student::class);

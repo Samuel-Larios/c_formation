@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('grants')->nullable();
             $table->string('loan')->nullable();
             $table->string('date')->nullable();
+            $table->string('start_up_kits_items_received')->nullable();
+            $table->string('state_of_farm_location')->nullable();
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade'); // Ajouter cette ligne
+            $table->foreignId('site_id')->constrained('sites')->onDelete('cascade');
             $table->timestamps();
         });
     }

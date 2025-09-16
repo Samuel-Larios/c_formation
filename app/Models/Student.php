@@ -27,6 +27,7 @@ class Student extends Authenticatable
         'contact_pers5',
         'email',
         'password',
+        'profile_photo',
         'state_of_origin',
         'state_of_residence',
         'state',

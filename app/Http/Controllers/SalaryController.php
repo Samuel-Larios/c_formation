@@ -10,36 +10,62 @@ use Illuminate\Support\Facades\Auth;
 
 class SalaryController extends Controller
 {
-    // Afficher la liste des salaires
-    public function index()
+    // Display the list of salaries
+    public function index(Request $request)
     {
-        // Récupérer l'utilisateur connecté
+        // Get the logged-in user
         $user = Auth::user();
 
-        // Récupérer les salaires avec les étudiants du site de l'utilisateur connecté
+        // Get all promotions for the filter
+        $promotions = \App\Models\Promotion::where('site_id', $user->site_id)->get();
+
+        // Get salaries with students from the user's site and filters
         $salaries = Salary::whereHas('student', function ($query) use ($user) {
             $query->where('site_id', $user->site_id);
+        })
+        ->when($request->filled('entreprise'), function ($q) use ($request) {
+            $q->where('entreprise', 'like', '%' . $request->entreprise . '%');
+        })
+        ->when($request->filled('localisation'), function ($q) use ($request) {
+            $q->where('localisation', 'like', '%' . $request->localisation . '%');
+        })
+        ->when($request->filled('employeur'), function ($q) use ($request) {
+            $q->where('employeur', 'like', '%' . $request->employeur . '%');
+        })
+        ->when($request->filled('tel'), function ($q) use ($request) {
+            $q->where('tel', 'like', '%' . $request->tel . '%');
+        })
+        ->when($request->filled('promotion'), function ($q) use ($request) {
+            $promotionId = $request->promotion;
+            $q->whereHas('student.promotions', function ($q2) use ($promotionId) {
+                $q2->where('promotion_id', $promotionId);
+            });
+        })
+        ->when($request->filled('sexe'), function ($q) use ($request) {
+            $q->whereHas('student', function ($subQ) use ($request) {
+                $subQ->where('sexe', $request->sexe);
+            });
         })
         ->with('student')
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
-        return view('salaries.index', compact('salaries'));
+        return view('salaries.index', compact('salaries', 'promotions'));
     }
 
-    // Récupérer les étudiants par promotion (AJAX)
+    // Get students by promotion (AJAX)
     public function getStudentsByPromotion(Request $request)
     {
         $promotionId = $request->get('promotion_id');
         $user = Auth::user();
 
-        // Vérifier si la promotion existe
+        // Check if promotion exists
         $promotion = Promotion::find($promotionId);
         if (!$promotion) {
-            return response()->json(['error' => 'Promotion non trouvée'], 404);
+            return response()->json(['error' => 'Promotion not found'], 404);
         }
 
-        // Récupérer les étudiants de la promotion et du site de l'utilisateur connecté
+        // Get students from the promotion and user's site
         $students = $promotion->students()
                               ->where('site_id', $user->site_id)
                               ->get(['id', 'last_name', 'first_name']);
@@ -47,28 +73,28 @@ class SalaryController extends Controller
         return response()->json($students);
     }
 
-    // Afficher le formulaire de création d'un salaire
+    // Display the form to create a salary
     public function create()
     {
-        // Récupérer l'utilisateur connecté
+        // Get the logged-in user
         $user = Auth::user();
 
-        // Récupérer toutes les promotions
+        // Get all promotions
         $promotions = Promotion::all();
 
-        // Récupérer les étudiants du site de l'utilisateur connecté
+        // Get students from the user's site
         $students = Student::where('site_id', $user->site_id)->get();
 
         return view('salaries.create', compact('promotions', 'students'));
     }
 
-    // Enregistrer un nouveau salaire
+    // Save a new salary
     public function store(Request $request)
     {
-        // Récupérer l'utilisateur connecté
+        // Get the logged-in user
         $user = Auth::user();
 
-        // Valider les données
+        // Validate data
         $request->validate([
             'entreprise' => 'required|string',
             'localisation' => 'required|string',
@@ -80,37 +106,37 @@ class SalaryController extends Controller
                 function ($attribute, $value, $fail) use ($user) {
                     $student = Student::find($value);
                     if (!$student || $student->site_id !== $user->site_id) {
-                        $fail('L\'étudiant sélectionné n\'appartient pas à votre site.');
+                        $fail('The selected student does not belong to your site.');
                     }
                 },
             ],
         ]);
 
-        // Créer un nouveau salaire
+        // Create a new salary
         Salary::create($request->all());
 
-        return redirect()->route('salaries.index')->with('success', 'Salaire créé avec succès.');
+        return redirect()->route('salaries.index')->with('success', 'Salary created successfully.');
     }
 
-    // Afficher le formulaire de modification d'un salaire
+    // Display the form to edit a salary
     public function edit(Salary $salary)
     {
-        // Récupérer l'utilisateur connecté
+        // Get the logged-in user
         $user = Auth::user();
 
-        // Récupérer toutes les promotions
+        // Get all promotions
         $promotions = Promotion::all();
 
-        // Récupérer les étudiants du site de l'utilisateur connecté
+        // Get students from the user's site
         $students = Student::where('site_id', $user->site_id)->get();
 
         return view('salaries.edit', compact('salary', 'promotions', 'students'));
     }
 
-    // Mettre à jour un salaire
+    // Update a salary
     public function update(Request $request, Salary $salary)
     {
-        // Valider les données
+        // Validate data
         $request->validate([
             'entreprise' => 'required|string',
             'localisation' => 'required|string',
@@ -118,7 +144,7 @@ class SalaryController extends Controller
             'tel' => 'required|string',
         ]);
 
-        // Mettre à jour le salaire
+        // Update the salary
         $salary->update($request->only([
             'entreprise',
             'localisation',
@@ -129,19 +155,67 @@ class SalaryController extends Controller
         return redirect()->route('salaries.index')->with('success', 'Salary updated successfully.');
     }
 
-    // Afficher les détails d'un salaire
+    // Display the details of a salary
     public function show($id)
     {
-        // Récupérer le salaire avec l'étudiant associé
+        // Get the salary with associated student
         $salary = Salary::with('student')->findOrFail($id);
 
         return view('salaries.show', compact('salary'));
     }
 
-    // Supprimer un salaire
+    // Delete a salary
     public function destroy(Salary $salary)
     {
         $salary->delete();
         return redirect()->route('salaries.index')->with('success', 'Salary successfully deleted.');
+    }
+
+    // Export salaries to Excel
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'entreprise' => 'nullable|string',
+            'localisation' => 'nullable|string',
+            'employeur' => 'nullable|string',
+            'tel' => 'nullable|string',
+            'promotion' => 'nullable|exists:promotions,id',
+            'sexe' => 'nullable|in:M,F',
+        ]);
+
+        $query = Salary::whereHas('student', function ($query) use ($user) {
+            $query->where('site_id', $user->site_id);
+        })
+        ->when($request->filled('entreprise'), function ($q) use ($request) {
+            $q->where('entreprise', 'like', '%' . $request->entreprise . '%');
+        })
+        ->when($request->filled('localisation'), function ($q) use ($request) {
+            $q->where('localisation', 'like', '%' . $request->localisation . '%');
+        })
+        ->when($request->filled('employeur'), function ($q) use ($request) {
+            $q->where('employeur', 'like', '%' . $request->employeur . '%');
+        })
+        ->when($request->filled('tel'), function ($q) use ($request) {
+            $q->where('tel', 'like', '%' . $request->tel . '%');
+        })
+        ->when($request->filled('promotion'), function ($q) use ($request) {
+            $promotionId = $request->promotion;
+            $q->whereHas('student.promotions', function ($q2) use ($promotionId) {
+                $q2->where('promotion_id', $promotionId);
+            });
+        })
+        ->when($request->filled('sexe'), function ($q) use ($request) {
+            $q->whereHas('student', function ($subQ) use ($request) {
+                $subQ->where('sexe', $request->sexe);
+            });
+        })
+        ->with('student')
+        ->orderBy('created_at', 'desc');
+
+        $salaries = $query->get();
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SalariesExport($salaries), 'salaries.xlsx');
     }
 }

@@ -21,7 +21,7 @@
         </div>
     @endif
 
-    <form action="{{ route('students.store') }}" method="POST" class="bg-light p-4 rounded shadow-sm">
+    <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="bg-light p-4 rounded shadow-sm">
         @csrf
 
         <!-- Section: Personal Information -->
@@ -76,6 +76,16 @@
                 <div class="col-md-6 mb-3">
                     <label for="date_naissance" class="form-label">Date of Birth:</label>
                     <input type="date" name="date_naissance" class="form-control" value="{{ old('date_naissance') }}" max="{{ date('Y-m-d') }}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="profile_photo" class="form-label">Photo d'identité:</label>
+                    <input type="file" name="profile_photo" id="profile_photo" class="form-control" accept="image/*">
+                    <small class="form-text text-muted">Formats acceptés: JPG, PNG, GIF. Taille maximale: 2MB</small>
+                    <div id="photo-preview" class="mt-2" style="display: none;">
+                        <img id="preview-img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                    </div>
                 </div>
             </div>
         </div>
@@ -215,6 +225,41 @@
 
             if (!valid) {
                 e.preventDefault();
+            }
+        });
+
+        // Photo preview functionality
+        document.getElementById('profile_photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photo-preview');
+            const previewImg = document.getElementById('preview-img');
+
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Veuillez sélectionner un fichier image valide (JPG, PNG, GIF).');
+                    e.target.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                // Validate file size (2MB max)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('La taille du fichier ne doit pas dépasser 2MB.');
+                    e.target.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
             }
         });
     });

@@ -19,7 +19,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('follow_ups.update', $followUp->id) }}" method="POST">
+                    <form action="{{ route('follow_ups.update', $followUp->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -75,6 +75,13 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <!-- Images -->
+                        <div class="form-group">
+                            <label for="images">Add Images</label>
+                            <input type="file" name="images[]" id="images" class="form-control" multiple>
+                            <small class="form-text text-muted">You can add more images here.</small>
                         </div>
 
                         <!-- Submit Button -->
