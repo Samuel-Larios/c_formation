@@ -8,6 +8,7 @@ use App\Models\Promotion;
 use App\Models\Evaluation;
 use App\Models\Matier;
 use App\Models\Utilisateur;
+use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
 {
@@ -180,7 +181,7 @@ class StatisticsController extends Controller
 
     public function promotionStatistics(Request $request)
     {
-        $promotions = Promotion::orderBy('num_promotion', 'desc')->get();
+        $promotions = Promotion::select('num_promotion', DB::raw('MIN(id) as id'))->groupBy('num_promotion')->orderBy('num_promotion', 'desc')->get();
         $lastFivePromotions = $promotions->take(5);
         $lastFiveData = [];
         foreach ($lastFivePromotions as $promotion) {
@@ -197,9 +198,12 @@ class StatisticsController extends Controller
         $expectedStudents = $request->get('expected', 0);
         $currentStudentsCount = 0;
         if ($selectedPromotionId) {
-            $currentStudentsCount = Student::whereHas('promotions', function ($query) use ($selectedPromotionId) {
-                $query->where('promotion_id', $selectedPromotionId);
-            })->count();
+            $selectedPromotion = Promotion::find($selectedPromotionId);
+            if ($selectedPromotion) {
+                $currentStudentsCount = Student::whereHas('promotions', function ($query) use ($selectedPromotion) {
+                    $query->where('promotions.num_promotion', $selectedPromotion->num_promotion);
+                })->count();
+            }
         }
 
         return view('statistics.promotion-statistics', compact('promotions', 'lastFiveData', 'selectedPromotionId', 'expectedStudents', 'currentStudentsCount'));
@@ -210,13 +214,19 @@ class StatisticsController extends Controller
         $promotionId = $request->get('promotion_id');
 
         if ($promotionId) {
-            $maleCount = Student::whereHas('promotions', function ($query) use ($promotionId) {
-                $query->where('promotion_id', $promotionId);
-            })->where('sexe', 'M')->count();
+            $selectedPromotion = Promotion::find($promotionId);
+            if ($selectedPromotion) {
+                $maleCount = Student::whereHas('promotions', function ($query) use ($selectedPromotion) {
+                    $query->where('promotions.num_promotion', $selectedPromotion->num_promotion);
+                })->where('sexe', 'M')->count();
 
-            $femaleCount = Student::whereHas('promotions', function ($query) use ($promotionId) {
-                $query->where('promotion_id', $promotionId);
-            })->where('sexe', 'F')->count();
+                $femaleCount = Student::whereHas('promotions', function ($query) use ($selectedPromotion) {
+                    $query->where('promotions.num_promotion', $selectedPromotion->num_promotion);
+                })->where('sexe', 'F')->count();
+            } else {
+                $maleCount = 0;
+                $femaleCount = 0;
+            }
         } else {
             $maleCount = Student::where('sexe', 'M')->count();
             $femaleCount = Student::where('sexe', 'F')->count();

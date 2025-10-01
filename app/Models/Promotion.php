@@ -30,7 +30,8 @@ class Promotion extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'promotion_apprenant', 'promotion_id', 'student_id');
+        return $this->belongsToMany(Student::class, 'promotion_apprenant', 'promotion_id', 'student_id')
+                    ->withPivot('site_id');
     }
     // Relation many-to-many avec Promotion
     public function promotions()

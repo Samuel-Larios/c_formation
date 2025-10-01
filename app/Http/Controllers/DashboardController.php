@@ -147,6 +147,25 @@ class DashboardController extends Controller
         $siteStatisticsLabels = $studentsPerPromotion->pluck('num_promotion');
         $siteStatisticsData = $studentsPerPromotion->pluck('total');
 
+        // Promotion summary data - Get unique promotions with total students for the user's site
+        $promotionSummary = DB::table('promotions')
+            ->leftJoin('promotion_apprenant', 'promotions.id', '=', 'promotion_apprenant.promotion_id')
+            ->leftJoin('students', 'promotion_apprenant.student_id', '=', 'students.id')
+            ->select(
+                'promotions.id as promotion_id',
+                'promotions.num_promotion',
+                DB::raw('COUNT(DISTINCT students.id) as total_students')
+            )
+            ->where('promotions.site_id', $siteId)
+            ->whereNotNull('promotions.id')
+            ->groupBy('promotions.id', 'promotions.num_promotion')
+            ->orderBy('promotions.num_promotion')
+            ->get();
+
+        // Calculate totals for the user's site
+        $totalPromotionsSite = $promotionSummary->count();
+        $totalStudentsInPromotionsSite = $promotionSummary->sum('total_students');
+
         return view('dashboard.dashboard', compact(
             'totalStudents',
             'totalSpecializations',
@@ -186,7 +205,10 @@ class DashboardController extends Controller
             'averageAgeBySiteLabels',
             'averageAgeBySiteData',
             'siteStatisticsLabels',
-            'siteStatisticsData'
+            'siteStatisticsData',
+            'promotionSummary',
+            'totalPromotionsSite',
+            'totalStudentsInPromotionsSite'
         ));
     }
 }

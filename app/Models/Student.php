@@ -65,7 +65,8 @@ class Student extends Authenticatable
     // Relation many-to-many avec Promotion
     public function promotions()
     {
-        return $this->belongsToMany(Promotion::class, 'promotion_apprenant', 'student_id', 'promotion_id');
+        return $this->belongsToMany(Promotion::class, 'promotion_apprenant', 'student_id', 'promotion_id')
+                    ->withPivot('site_id');
     }
     public function activites()
     {

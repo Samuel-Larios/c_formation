@@ -222,7 +222,10 @@
                 <div class="ms-md-auto py-2 py-md-0">
                     <a href="{{ route('students.index') }}" class="btn btn-label-info btn-round me-2">View Students</a>
                     <a href="{{ route('students.create') }}" class="btn btn-primary btn-round">Add Student</a>
+
+                    <a href="{{ route('dashboard') }}" class="btn btn-label-primary btn-round">Access Dashboard</a>
                 </div>
+
             </div>
 
             <!-- Statistics Overview -->
@@ -262,9 +265,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalStudents ?? 0) }}</h5>
                                     <p class="card-category mb-0">Students</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-primary rounded-pill">+{{ rand(5, 20) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-primary"
@@ -286,9 +289,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalSpecializations ?? 0) }}</h5>
                                     <p class="card-category mb-0">Specializations</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-info rounded-pill">+{{ rand(3, 15) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-info"
@@ -310,9 +313,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalPromotions ?? 0) }}</h5>
                                     <p class="card-category mb-0">Promotions</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-success rounded-pill">+{{ rand(2, 10) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-success"
@@ -334,9 +337,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalSites ?? 0) }}</h5>
                                     <p class="card-category mb-0">Training Centers</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-secondary rounded-pill">+{{ rand(1, 5) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-secondary"
@@ -361,9 +364,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalJobCreations ?? 0) }}</h5>
                                     <p class="card-category mb-0">Job Creations</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-warning rounded-pill">+{{ rand(8, 25) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-warning"
@@ -385,9 +388,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalSalaries ?? 0) }}</h5>
                                     <p class="card-category mb-0">Salaries</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-danger rounded-pill">+{{ rand(10, 30) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-danger"
@@ -409,9 +412,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalSubventions ?? 0) }}</h5>
                                     <p class="card-category mb-0">Subventions</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-info rounded-pill">+{{ rand(5, 18) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-info"
@@ -433,9 +436,9 @@
                                     <h5 class="card-title mb-0">{{ number_format($totalEvaluations ?? 0) }}</h5>
                                     <p class="card-category mb-0">Evaluations</p>
                                 </div>
-                                <div class="text-end">
+                                {{-- <div class="text-end">
                                     <span class="badge bg-success rounded-pill">+{{ rand(12, 35) }}%</span>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="progress mt-2" style="height: 4px;">
                                 <div class="progress-bar bg-success"
@@ -835,11 +838,11 @@
                                                 </div>
 
                                                 <div class="progress-group mb-3">
-                                                    <div class="d-flex justify-content-between mb-1">
+                                                    {{-- <div class="d-flex justify-content-between mb-1">
                                                         <small class="text-muted">Capacity</small>
                                                         <small
                                                             class="text-muted">{{ number_format($percentage, 1) }}%</small>
-                                                    </div>
+                                                    </div> --}}
                                                     <div class="progress" style="height: 8px;">
                                                         <div class="progress-bar bg-primary" role="progressbar"
                                                             style="width: {{ $percentage }}%"
@@ -911,11 +914,149 @@
                             </div>
 
                             <!-- Distribution Chart -->
-                            <div class="card card-round mt-4">
+                            {{-- <div class="card card-round mt-4">
                                 <div class="card-body">
                                     <div class="chart-container" style="height: 300px;">
                                         <canvas id="studentsDistributionChart"></canvas>
                                     </div>
+                                </div>
+                            </div> --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Promotion Summary Table -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-round">
+                        <div class="card-header bg-gradient-info">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title text-white mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>Promotion Summary
+                                </h4>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-white text-info me-2">
+                                        <i class="fas fa-graduation-cap me-1"></i>
+                                        {{ $totalPromotions }} Promotions
+                                    </span>
+                                    <span class="badge bg-white text-info">
+                                        <i class="fas fa-users me-1"></i>
+                                        {{ $totalStudentsInPromotions }} Students
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if($promotionSummary->count() > 0)
+                                @php
+                                    $groupedPromotions = $promotionSummary->groupBy('num_promotion');
+                                @endphp
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th><i class="fas fa-graduation-cap me-1"></i>Promotion</th>
+                                                <th><i class="fas fa-users me-1"></i>Total Students (All Sites)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($groupedPromotions as $numPromotion => $sites)
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="icon-circle bg-info me-3">
+                                                                <i class="fas fa-graduation-cap text-white"></i>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0 fw-bold">{{ $numPromotion }}</h6>
+                                                                <small class="text-muted">Promotion {{ $numPromotion }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge bg-success rounded-pill me-2 fs-6">
+                                                                {{ $sites->sum('total_students') }}
+                                                            </span>
+                                                            <small class="text-muted">students enrolled across all sites</small>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <small class="text-muted">Sites: </small>
+                                                            @foreach($sites as $site)
+                                                                <span class="badge bg-secondary me-1">{{ $site->site_name }} ({{ $site->total_students }})</span>
+                                                            @endforeach
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot class="table-light">
+                                            <tr class="fw-bold">
+                                                <td>
+                                                    <i class="fas fa-sigma me-1"></i>Grand Total
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge bg-primary rounded-pill me-2 fs-6">
+                                                            {{ $totalStudentsInPromotions }}
+                                                        </span>
+                                                        <small class="text-muted">total students</small>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Summary Cards -->
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="card card-stats card-round bg-light">
+                                            <div class="card-body text-center">
+                                                <div class="icon-big text-info mb-2">
+                                                    <i class="fas fa-graduation-cap"></i>
+                                                </div>
+                                                <h4 class="text-info mb-0">{{ $totalPromotions }}</h4>
+                                                <small class="text-muted">Total Promotions</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card card-stats card-round bg-light">
+                                            <div class="card-body text-center">
+                                                <div class="icon-big text-success mb-2">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                                <h4 class="text-success mb-0">{{ $totalStudentsInPromotions }}</h4>
+                                                <small class="text-muted">Total Students</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            @else
+                                <div class="text-center py-5">
+                                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No Promotion Data Available</h5>
+                                    <p class="text-muted">There are no promotions configured in the system yet.</p>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="card-footer bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-sync-alt me-1"></i>
+                                    Updated: {{ now()->format('M j, Y H:i') }}
+                                </small>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="window.location.reload()">
+                                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                                    </button>
+                                    <a href="{{ route('promotions.index') }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Manage Promotions
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1126,10 +1267,6 @@
                 </div>
             </div>
             <!-- Charts Section -->
-
-
-
-
         </div>
     </div>
 @endsection
@@ -1614,6 +1751,71 @@
                     }
                 });
             }
+        @endif
+
+        // Promotion Summary Chart
+        @if (isset($promotionSummary) && $promotionSummary->count() > 0)
+            console.log('Promotion Summary Data:', @json($promotionSummary));
+            var promotionSummaryLabels = @json($promotionSummary->pluck('num_promotion'));
+            var promotionSummaryData = @json($promotionSummary->pluck('total_students'));
+            console.log('Labels:', promotionSummaryLabels);
+            console.log('Data:', promotionSummaryData);
+
+            var ctxPromotionSummaryElem = document.getElementById('promotionSummaryChart');
+            console.log('Canvas Element:', ctxPromotionSummaryElem);
+
+            if (ctxPromotionSummaryElem) {
+                var ctxPromotionSummary = ctxPromotionSummaryElem.getContext('2d');
+                console.log('Canvas Context:', ctxPromotionSummary);
+
+                var promotionSummaryChart = new Chart(ctxPromotionSummary, {
+                    type: 'bar',
+                    data: {
+                        labels: promotionSummaryLabels,
+                        datasets: [{
+                            label: 'Total Students Across All Sites',
+                            data: promotionSummaryData,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Student Distribution by Promotion'
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Students'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Promotion'
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Chart created successfully:', promotionSummaryChart);
+            } else {
+                console.error('Canvas element with ID "promotionSummaryChart" not found');
+            }
+        @else
+            console.log('Promotion Summary data not available or empty');
+            console.log('Promotion Summary:', @json($promotionSummary ?? null));
         @endif
 
         // Site Statistics Chart

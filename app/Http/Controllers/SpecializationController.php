@@ -10,18 +10,27 @@ use Illuminate\Support\Facades\Auth;
 
 class SpecializationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Récupérer le site_id de l'utilisateur connecté
         $siteId = Auth::user()->site_id;
 
-        // Charger les spécialisations liées au site de l'utilisateur
+        // Récupérer le terme de recherche
+        $search = $request->get('search');
+
+        // Charger les spécialisations liées au site de l'utilisateur avec filtre de recherche
         $specializations = Specialization::with('student', 'specialite')
             ->where('site_id', $siteId)
+            ->when($search, function ($query) use ($search) {
+                $query->whereHas('student', function ($q) use ($search) {
+                    $q->where('first_name', 'like', '%' . $search . '%')
+                      ->orWhere('last_name', 'like', '%' . $search . '%');
+                });
+            })
             ->latest()
             ->paginate(10);
 
-        return view('specializations.index', compact('specializations'));
+        return view('specializations.index', compact('specializations', 'search'));
     }
 
     public function create()

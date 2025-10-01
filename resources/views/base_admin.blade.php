@@ -63,7 +63,7 @@
                 <!-- Logo Header -->
                 <div class="logo-header" data-background-color="dark">
                     <a href="{{ route('dashboard') }}" class="logo">
-                        <img src="{{ asset('assets/img/kaiadmin/Logo_Songhaï.png') }}" alt="Songhaï Logo"
+                        <img src="{{ asset('assets/img/kaiadmin/Logo_Songhai.png') }}" alt="Songhaï Logo"
                             class="navbar-brand" height="50" width="auto" />
                     </a>
                     <div class="nav-toggle">

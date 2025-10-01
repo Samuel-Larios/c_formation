@@ -146,6 +146,28 @@ class AdminController extends Controller
             ->groupBy('sites.id', 'sites.designation')
             ->get();
 
+        // Promotion summary data - Get promotions with sites and total students
+        $promotionSummary = DB::table('promotions')
+            ->leftJoin('promotion_apprenant', 'promotions.id', '=', 'promotion_apprenant.promotion_id')
+            ->leftJoin('students', 'promotion_apprenant.student_id', '=', 'students.id')
+            ->leftJoin('sites', 'students.site_id', '=', 'sites.id')
+            ->select(
+                'promotions.num_promotion',
+                'sites.designation as site_name',
+                DB::raw('COUNT(DISTINCT students.id) as total_students')
+            )
+            ->whereNotNull('promotions.id')
+            ->groupBy('promotions.num_promotion', 'sites.designation')
+            ->orderBy('promotions.num_promotion')
+            ->orderBy('sites.designation')
+            ->get();
+
+
+
+        // Calculate global totals
+        $totalPromotions = $promotionSummary->count();
+        $totalStudentsInPromotions = $promotionSummary->sum('total_students');
+
         // Retourner la vue avec les données
         return view('admin.dashboard', compact(
             'totalStudents',
@@ -171,7 +193,10 @@ class AdminController extends Controller
             'siteStatistics',
             'studentsPerSpecializationPerSite',
             'studentsPerSitePerPromotion',
-            'usersPerSite'
+            'usersPerSite',
+            'promotionSummary',
+            'totalPromotions',
+            'totalStudentsInPromotions'
 
         ));
 

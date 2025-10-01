@@ -31,6 +31,7 @@
 
         <div class="form-group">
             <label>Students:</label>
+            <input type="text" id="student_search" class="form-control mb-2" placeholder="Search students...">
             <select name="student_ids[]" id="student_ids" class="form-control" multiple required>
                 @foreach ($students as $student)
                     <option value="{{ $student->id }}">{{ $student->first_name }} {{ $student->last_name }}</option>
@@ -87,6 +88,21 @@
 
         // Charger les étudiants pour la spécialisation sélectionnée par défaut au chargement de la page
         $('#specialite_id').trigger('change');
+
+        // Filtrer les étudiants en fonction de la recherche
+        $('#student_search').on('keyup', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            const options = $('#student_ids option');
+
+            options.each(function() {
+                const text = $(this).text().toLowerCase();
+                if (text.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
     });
 </script>
 @endsection
