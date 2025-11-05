@@ -2,9 +2,9 @@
 
 ## Étapes à suivre:
 
--   [ ] Ajouter méthodes dans StudentStatisticsController (handicapSituationsForm, filterHandicapSituations, exportFilteredHandicapSituations)
--   [ ] Créer la vue handicap-situations.blade.php
--   [ ] Ajouter les routes dans web.php
--   [ ] Ajouter lien dans index.blade.php
--   [ ] Créer HandicapSituationsExport si nécessaire
--   [ ] Tester le formulaire
+-   [x] Ajouter méthodes dans StudentStatisticsController (handicapSituationsForm, filterHandicapSituations, exportFilteredHandicapSituations)
+-   [x] Créer la vue handicap-situations.blade.php
+-   [x] Ajouter les routes dans web.php
+-   [x] Ajouter lien dans index.blade.php
+-   [x] Créer HandicapSituationsExport si nécessaire
+-   [x] Tester le formulaire
