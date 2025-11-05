@@ -134,16 +134,16 @@ Route::middleware('auth')->group(function () {
     Route::put('/salaries/{salary}', [SalaryController::class, 'update'])->name('salaries.update');
     Route::delete('/salaries/{salary}', [SalaryController::class, 'destroy'])->name('salaries.destroy');
     Route::post('/salaries/export', [SalaryController::class, 'export'])->name('salaries.export');
-// SubventionController routes
-Route::get('subventions', [SubventionController::class, 'index'])->name('subventions.index');
-Route::get('subventions/create', [SubventionController::class, 'create'])->name('subventions.create');
-Route::post('subventions', [SubventionController::class, 'store'])->name('subventions.store');
-Route::get('subventions/{subvention}', [SubventionController::class, 'show'])->name('subventions.show');
-Route::get('subventions/{subvention}/edit', [SubventionController::class, 'edit'])->name('subventions.edit');
-Route::put('subventions/{subvention}', [SubventionController::class, 'update'])->name('subventions.update');
-Route::delete('subventions/{subvention}', [SubventionController::class, 'destroy'])->name('subventions.destroy');
-Route::post('/subventions/export', [SubventionController::class, 'export'])->name('subventions.export');
-Route::get('/subventions/students/{promotionId}', [SubventionController::class, 'getStudentsByPromotion']);
+    // SubventionController routes
+    Route::get('subventions', [SubventionController::class, 'index'])->name('subventions.index');
+    Route::get('subventions/create', [SubventionController::class, 'create'])->name('subventions.create');
+    Route::post('subventions', [SubventionController::class, 'store'])->name('subventions.store');
+    Route::get('subventions/{subvention}', [SubventionController::class, 'show'])->name('subventions.show');
+    Route::get('subventions/{subvention}/edit', [SubventionController::class, 'edit'])->name('subventions.edit');
+    Route::put('subventions/{subvention}', [SubventionController::class, 'update'])->name('subventions.update');
+    Route::delete('subventions/{subvention}', [SubventionController::class, 'destroy'])->name('subventions.destroy');
+    Route::post('/subventions/export', [SubventionController::class, 'export'])->name('subventions.export');
+    Route::get('/subventions/students/{promotionId}', [SubventionController::class, 'getStudentsByPromotion']);
     // PromotionApprenantController routes
     Route::get('utilisateurs', [UtilisateurController::class, 'index'])->name('utilisateurs.index');
     Route::get('utilisateurs/create', [UtilisateurController::class, 'create'])->name('utilisateurs.create');
@@ -214,12 +214,13 @@ Route::get('/subventions/students/{promotionId}', [SubventionController::class, 
     Route::get('/get-students', [StudentStatisticsController::class, 'getStudents'])->name('get.students');
     Route::get('/studentstatistics/{id}', [StudentStatisticsController::class, 'showStudent'])->name('student.details');
     Route::get('/studentstatistics/{id}/print', [StudentStatisticsController::class, 'printStudent'])->name('student.print');
+    Route::get('/studentstatistics/export/filtered', [StudentStatisticsController::class, 'exportFilteredStudents'])->name('student.statistics.export.filtered');
     // StatisticsController routes
-    Route::get('/get-promotions/{siteId}', [StatisticsController::class, 'getPromotions'])->name('get.promotions');
-    Route::get('/get-students/{promotionId}', [StatisticsController::class, 'getStudents'])->name('get.students');
+    Route::get('/get-promotions/{siteId}', [StatisticsController::class, 'getPromotions'])->name('statistics.get.promotions');
+    Route::get('/get-students/{promotionId}', [StatisticsController::class, 'getStudents'])->name('statistics.get.students');
     Route::get('/student/{id}', [StatisticsController::class, 'showStudent'])->name('student.show');
-    Route::get('/get-promotions/{siteId}', [StudentStatisticsController::class, 'getPromotions'])->name('get.promotions');
-    Route::get('/get-students/{promotionId}', [StudentStatisticsController::class, 'getStudents'])->name('get.students');
+    Route::get('/get-promotions/{siteId}', [StudentStatisticsController::class, 'getPromotions'])->name('student.get.promotions');
+    Route::get('/get-students/{promotionId}', [StudentStatisticsController::class, 'getStudents'])->name('student.get.students');
 
     // Statistics routes
     Route::prefix('statistics')->group(function () {
@@ -248,6 +249,33 @@ Route::get('/subventions/students/{promotionId}', [SubventionController::class, 
     Route::get('/get-students-by-promotion', [PromotionApprenantController::class, 'getStudentsByPromotion'])->name('get_students_by_promotion');
     Route::get('/get-students-by-specialization', [SpecializationController::class, 'getStudentsBySpecialization'])->name('get_students_by_specialization');
     Route::get('/student-statistics', [StudentStatisticsController::class, 'index'])->name('student.statistics.index');
+    Route::get('/student-statistics/subventions', [StudentStatisticsController::class, 'subventionsForm'])->name('student.statistics.subventions');
+    Route::post('/student-statistics/filter-subventions', [StudentStatisticsController::class, 'filterSubventions'])->name('student.statistics.filter.subventions');
+    Route::get('/student-statistics/export-subventions', [StudentStatisticsController::class, 'exportFilteredSubventions'])->name('student.statistics.export.subventions');
+
+    Route::get('/student-statistics/salaries', [StudentStatisticsController::class, 'salariesForm'])->name('student.statistics.salaries');
+    Route::post('/student-statistics/filter-salaries', [StudentStatisticsController::class, 'filterSalaries'])->name('student.statistics.filter.salaries');
+    Route::get('/student-statistics/export-salaries', [StudentStatisticsController::class, 'exportFilteredSalaries'])->name('student.statistics.export.salaries');
+
+    Route::get('/student-statistics/job-creations', [StudentStatisticsController::class, 'jobCreationsForm'])->name('student.statistics.job-creations');
+    Route::post('/student-statistics/filter-job-creations', [StudentStatisticsController::class, 'filterJobCreations'])->name('student.statistics.filter.job-creations');
+    Route::get('/student-statistics/export-job-creations', [StudentStatisticsController::class, 'exportFilteredJobCreations'])->name('student.statistics.export.job-creations');
+
+    Route::get('/student-statistics/state-of-origin', [StudentStatisticsController::class, 'stateOfOriginForm'])->name('student.statistics.state-of-origin');
+    Route::post('/student-statistics/filter-state-of-origin', [StudentStatisticsController::class, 'filterStudentsByStateOfOrigin'])->name('student.statistics.filter.state-of-origin');
+    Route::get('/student-statistics/export-state-of-origin', [StudentStatisticsController::class, 'exportFilteredStudentsByStateOfOrigin'])->name('student.statistics.export.state-of-origin');
+
+    Route::get('/student-statistics/follow-ups', [StudentStatisticsController::class, 'followUpsForm'])->name('student.statistics.follow-ups');
+    Route::post('/student-statistics/filter-follow-ups', [StudentStatisticsController::class, 'filterFollowUps'])->name('student.statistics.filter.follow-ups');
+    Route::get('/student-statistics/export-follow-ups', [StudentStatisticsController::class, 'exportFilteredFollowUps'])->name('student.statistics.export.follow-ups');
+
+    Route::get('/student-statistics/entrepreneurs', [StudentStatisticsController::class, 'entrepreneursForm'])->name('student.statistics.entrepreneurs');
+    Route::post('/student-statistics/filter-entrepreneurs', [StudentStatisticsController::class, 'filterEntrepreneurs'])->name('student.statistics.filter.entrepreneurs');
+    Route::get('/student-statistics/export-entrepreneurs', [StudentStatisticsController::class, 'exportFilteredEntrepreneurs'])->name('student.statistics.export.entrepreneurs');
+
+    Route::get('/student-statistics/handicap-situations', [StudentStatisticsController::class, 'handicapSituationsForm'])->name('student.statistics.handicap-situations');
+    Route::post('/student-statistics/filter-handicap-situations', [StudentStatisticsController::class, 'filterHandicapSituations'])->name('student.statistics.filter.handicap-situations');
+    Route::get('/student-statistics/export-handicap-situations', [StudentStatisticsController::class, 'exportFilteredHandicapSituations'])->name('student.statistics.export.handicap-situations');
     Route::post('/statistics/filter-matiers', [StatisticsController::class, 'filterMatiers'])->name('statistics.filter.matiers');
     Route::get('/get-students-by-promotion', [PromotionApprenantController::class, 'getStudentsByPromotion'])->name('get_students_by_promotion');
     Route::get('/entities/get-students-by-site', [EntityController::class, 'getStudentsBySite'])->name('entities.getStudentsBySite');

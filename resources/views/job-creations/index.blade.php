@@ -21,16 +21,16 @@
                 <div class="card border-primary shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <h5 class="card-title mb-0"><i class="fas fa-filter"></i> Filter by Promotion</h5>
-                        @if(isset($aggregateAcrossSites) && $aggregateAcrossSites)
-                            <small class="text-warning"><i class="fas fa-info-circle"></i> Les calculs agrègent les étudiants de cette promotion sur tous les sites.</small>
+                        @if (isset($aggregateAcrossSites) && $aggregateAcrossSites)
+                            <small class="text-warning"><i class="fas fa-info-circle"></i> Calculations aggregate students
+                                from this promotion across all sites.</small>
                         @endif
                     </div>
                     <div class="card-body">
                         <form method="GET" action="{{ route('jobcreations.index') }}">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
-                                <select name="promotion" id="promotion" class="form-select"
-                                    onchange="this.form.submit()">
+                                <select name="promotion" id="promotion" class="form-select" onchange="this.form.submit()">
                                     <option value="">All promotions</option>
                                     @foreach ($promotions as $promotion)
                                         <option value="{{ $promotion->num_promotion }}"
@@ -47,33 +47,53 @@
             @if (isset($studentGenderCounts) && count($studentGenderCounts) > 0)
                 <div class="col-md-6">
                     <div class="card border-success shadow-sm">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="card-title mb-0"><i class="fas fa-chart-pie"></i> Student Gender Distribution</h5>
+
+                        <!-- Header -->
+                        <div class="card-header bg-success text-white d-flex align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-chart-pie me-2"></i> Student Gender Distribution
+                            </h5>
                         </div>
+
+                        <!-- Body -->
                         <div class="card-body">
-                            <h6 class="text-info mb-3"><i class="fas fa-users"></i> Selected Promotion</h6>
-                            <div class="row text-center mb-3">
+
+                            <!-- Section title -->
+                            <h6 class="text-info mb-3">
+                                <i class="fas fa-users me-2"></i> Selected Promotion
+                            </h6>
+
+                            <!-- Stats row -->
+                            <div class="row text-center g-3">
+
+                                <!-- Males -->
                                 <div class="col-4">
-                                    <div class="p-3 bg-light rounded border">
+                                    <div class="p-3 bg-light rounded border h-100">
                                         <i class="fas fa-male fa-2x text-primary mb-2"></i>
-                                        <h4 class="text-primary">{{ $studentGenderCounts['M'] ?? 0 }}</h4>
+                                        <h4 class="text-primary mb-1">{{ $studentGenderCounts['M'] ?? 0 }}</h4>
                                         <small class="text-muted">Males (M)</small>
                                     </div>
                                 </div>
+
+                                <!-- Females -->
                                 <div class="col-4">
-                                    <div class="p-3 bg-light rounded border">
+                                    <div class="p-3 bg-light rounded border h-100">
                                         <i class="fas fa-female fa-2x text-danger mb-2"></i>
-                                        <h4 class="text-danger">{{ $studentGenderCounts['F'] ?? 0 }}</h4>
+                                        <h4 class="text-danger mb-1">{{ $studentGenderCounts['F'] ?? 0 }}</h4>
                                         <small class="text-muted">Females (F)</small>
                                     </div>
                                 </div>
+
+                                <!-- Total -->
                                 <div class="col-4">
-                                    <div class="p-3 bg-success rounded border">
-                                        <i class="fas fa-users fa-2x text-white mb-2"></i>
-                                        <h4 class="text-white">{{ $totalStudents }}</h4>
-                                        <small class="text-white">Total Students with Jobs</small>
+                                    <div class="p-3 rounded border h-100 text-white"
+                                        style="background: linear-gradient(135deg, #28a745, #218838);">
+                                        <i class="fas fa-users fa-2x mb-2"></i>
+                                        <h4 class="mb-1">{{ $totalStudents }}</h4>
+                                        <small>Total Students</small>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -81,83 +101,174 @@
             @endif
         </div>
 
-        @if($promotionId)
-        <!-- Job Creation Statistics -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h3>Job Creation Statistics for Selected Promotion</h3>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Students in Promotion</h5>
-                                <h2>{{ $totalStudentsInPromotion }}</h2>
+        @if ($promotionId)
+            <!-- Job Creation Statistics -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h3 class="fw-bold text-center mb-4">Job Creation Statistics for Selected Promotion</h3>
+                    <div class="row g-4">
+
+                        <!-- Total Students -->
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card shadow border-0 h-100">
+                                <div class="card-header bg-info text-white text-center fw-semibold">
+                                    Total Students in Promotion
+                                </div>
+                                <div class="card-body text-center">
+                                    <h2 class="fw-bold">{{ $totalStudentsInPromotion }}</h2>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Students with Jobs</h5>
-                                <h2>{{ $studentsWithJobs }}</h2>
+
+                        <!-- Students with Jobs -->
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card shadow border-0 h-100">
+                                <div class="card-header bg-success text-white text-center fw-semibold">
+                                    Students with Jobs
+                                </div>
+                                <div class="card-body text-center">
+                                    <h2 class="fw-bold">{{ $studentsWithJobs }}</h2>
+                                    @if (isset($studentsWithJobsByGender))
+                                        <hr>
+                                        <div class="d-flex justify-content-around">
+                                            <div class="text-center">
+                                                <i class="fas fa-male fa-2x text-primary mb-2"></i>
+                                                <h6 class="mb-1">Men</h6>
+                                                <span
+                                                    class="badge bg-primary fs-6">{{ $studentsWithJobsByGender['M'] ?? 0 }}</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="fas fa-female fa-2x text-danger mb-2"></i>
+                                                <h6 class="mb-1">Women</h6>
+                                                <span
+                                                    class="badge bg-danger fs-6">{{ $studentsWithJobsByGender['F'] ?? 0 }}</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Students without Jobs</h5>
-                                <h2>{{ $studentsWithoutJobs }}</h2>
+
+                        <!-- Students without Jobs -->
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card shadow border-0 h-100">
+                                <div class="card-header bg-warning text-dark text-center fw-semibold">
+                                    Students without Jobs
+                                </div>
+                                <div class="card-body text-center">
+                                    <h2 class="fw-bold">{{ $studentsWithoutJobs }}</h2>
+                                    @if (isset($studentsWithoutJobsByGender))
+                                        <hr>
+                                        <div class="d-flex justify-content-around">
+                                            <div class="text-center">
+                                                <i class="fas fa-male fa-2x text-primary mb-2"></i>
+                                                <h6 class="mb-1">Men</h6>
+                                                <span
+                                                    class="badge bg-primary fs-6">{{ $studentsWithoutJobsByGender['M'] ?? 0 }}</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="fas fa-female fa-2x text-danger mb-2"></i>
+                                                <h6 class="mb-1">Women</h6>
+                                                <span
+                                                    class="badge bg-danger fs-6">{{ $studentsWithoutJobsByGender['F'] ?? 0 }}</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Total Job Creations -->
+                        <div class="col-md-3 col-sm-6">
+                            <div class="card shadow border-0 h-100">
+                                <div class="card-header text-white text-center fw-semibold"
+                                    style="background: linear-gradient(135deg, #28a745, #218838);">
+                                    Total Job Creations
+                                </div>
+                                <div class="card-body text-center">
+                                    <h2 class="fw-bold">{{ $totalJobCreations }}</h2>
+                                    @if (isset($jobCreatorsByGender))
+                                        <hr>
+                                        <div class="d-flex justify-content-around">
+                                            <div class="text-center">
+                                                <i class="fas fa-male fa-2x text-primary mb-2"></i>
+                                                <h6 class="mb-1">Men</h6>
+                                                <span
+                                                    class="badge bg-primary fs-6">{{ $jobCreatorsByGender['Homme'] ?? 0 }}</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="fas fa-female fa-2x text-danger mb-2"></i>
+                                                <h6 class="mb-1">Women</h6>
+                                                <span
+                                                    class="badge bg-danger fs-6">{{ $jobCreatorsByGender['Femme'] ?? 0 }}</span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">Total Job Creations</h5>
-                                <h2>{{ $totalJobCreations }}</h2>
+                </div>
+            </div>
+
+            <!-- Percentage Achievement -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card border-info shadow-sm">
+
+                        <!-- Header -->
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-percentage me-2"></i> Job Creation Target Achievement (70%)
+                            </h5>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="card-body">
+                            <div class="row text-center align-items-center">
+
+                                <!-- Expected -->
+                                <div class="col-md-4 border-end">
+                                    <i class="fas fa-user-check fa-2x text-primary mb-2"></i>
+                                    <h5 class="mb-1">Expected Students with Jobs</h5>
+                                    <h3 class="text-primary fw-bold">{{ $expectedStudentsWithJobs }}</h3>
+                                </div>
+
+                                <!-- Actual -->
+                                <div class="col-md-4 border-end">
+                                    <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                                    <h5 class="mb-1">Actual Percentage</h5>
+                                    <h3 class="fw-bold {{ $isReached ? 'text-success' : 'text-danger' }}">
+                                        {{ $actualPercentage }}%
+                                    </h3>
+                                </div>
+
+                                <!-- Difference -->
+                                <div class="col-md-4">
+                                    <i
+                                        class="fas fa-exchange-alt fa-2x {{ $difference >= 0 ? 'text-success' : 'text-danger' }} mb-2"></i>
+                                    <h5 class="mb-1">Difference</h5>
+                                    <h3 class="fw-bold {{ $difference >= 0 ? 'text-success' : 'text-danger' }}">
+                                        {{ $difference }}%
+                                    </h3>
+                                    <small class="fw-semibold {{ $isReached ? 'text-success' : 'text-danger' }}">
+                                        {{ $isReached ? 'Target Reached' : 'Target Not Reached' }}
+                                    </small>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Percentage Achievement -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card border-info shadow-sm">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="card-title mb-0"><i class="fas fa-percentage"></i> Job Creation Target Achievement (70%)</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row text-center">
-                            <div class="col-md-4">
-                                <h5>Expected Students with Jobs</h5>
-                                <h3 class="text-primary">{{ $expectedStudentsWithJobs }}</h3>
-                            </div>
-                            <div class="col-md-4">
-                                <h5>Actual Percentage</h5>
-                                <h3 class="{{ $isReached ? 'text-success' : 'text-danger' }}">{{ $actualPercentage }}%</h3>
-                            </div>
-                            <div class="col-md-4">
-                                <h5>Difference</h5>
-                                <h3 class="{{ $difference >= 0 ? 'text-success' : 'text-danger' }}">{{ $difference }}%</h3>
-                                <small class="{{ $isReached ? 'text-success' : 'text-danger' }}">
-                                    {{ $isReached ? 'Target Reached' : 'Target Not Reached' }}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+            <!-- Histogram -->
+            <div class="mb-4">
+                <h3>Job Creation Histogram</h3>
+                <canvas id="jobCreationHistogram" width="400" height="200"></canvas>
             </div>
-        </div>
-
-        <!-- Histogram -->
-        <div class="mb-4">
-            <h3>Job Creation Histogram</h3>
-            <canvas id="jobCreationHistogram" width="400" height="200"></canvas>
-        </div>
         @endif
 
         <!-- Student Summary Table -->
@@ -247,52 +358,52 @@
     <!-- Scripts for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        @if($promotionId)
-        // Histogram for job creations
-        const histogramCtx = document.getElementById('jobCreationHistogram');
-        if (histogramCtx) {
-            const histogramData = @json($histogramData);
-            const histogramChart = new Chart(histogramCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Students with Jobs', 'Students without Jobs'],
-                    datasets: [{
-                        label: 'Number of Students',
-                        data: [histogramData.students_with_jobs, histogramData.students_without_jobs],
-                        backgroundColor: [
-                            'rgba(40, 167, 69, 0.8)',
-                            'rgba(220, 53, 69, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(40, 167, 69, 1)',
-                            'rgba(220, 53, 69, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Students with and without Job Creations'
-                        },
-                        legend: {
-                            display: false
-                        }
+        @if ($promotionId)
+            // Histogram for job creations
+            const histogramCtx = document.getElementById('jobCreationHistogram');
+            if (histogramCtx) {
+                const histogramData = @json($histogramData);
+                const histogramChart = new Chart(histogramCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Students with Jobs', 'Students without Jobs'],
+                        datasets: [{
+                            label: 'Number of Students',
+                            data: [histogramData.students_with_jobs, histogramData.students_without_jobs],
+                            backgroundColor: [
+                                'rgba(40, 167, 69, 0.8)',
+                                'rgba(220, 53, 69, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgba(40, 167, 69, 1)',
+                                'rgba(220, 53, 69, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
+                    options: {
+                        responsive: true,
+                        plugins: {
                             title: {
                                 display: true,
-                                text: 'Number of Students'
+                                text: 'Students with and without Job Creations'
+                            },
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Students'
+                                }
                             }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
         @endif
     </script>
 @endsection

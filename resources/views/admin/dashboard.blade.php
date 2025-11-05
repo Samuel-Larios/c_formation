@@ -251,6 +251,16 @@
                 </div>
             </div>
 
+            <!-- Training Center Statistics -->
+            @php
+                $totalStats = [
+                    'students' => collect($siteStatistics)->sum('total_students'),
+                    'entities' => collect($siteStatistics)->sum('total_entities'),
+                    'jobs' => collect($siteStatistics)->sum('total_job_creations'),
+                    'salaries' => collect($siteStatistics)->sum('total_salaries'),
+                ];
+            @endphp
+
             <!-- Main Statistics Cards -->
             <div class="row">
                 <!-- Students Card -->
@@ -310,8 +320,9 @@
                                     <i class="fas fa-chalkboard-teacher text-white"></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h5 class="card-title mb-0">{{ number_format($totalPromotions ?? 0) }}</h5>
-                                    <p class="card-category mb-0">Promotions</p>
+                                    {{-- <h5 class="card-title mb-0">{{ number_format($totalPromotions ?? 0) }}</h5> --}}
+                                    <h5 class="card-title mb-0">{{ $totalStats['entities'] }}</h5>
+                                    <p class="card-category mb-0">Entities</p>
                                 </div>
                                 {{-- <div class="text-end">
                                     <span class="badge bg-success rounded-pill">+{{ rand(2, 10) }}%</span>
@@ -661,6 +672,15 @@
             <!-- Training Center Statistics -->
             <div class="row">
                 <div class="col-md-12">
+                    @php
+                        $totalStats = [
+                            'students' => collect($siteStatistics)->sum('total_students'),
+                            'entities' => collect($siteStatistics)->sum('total_entities'),
+                            'jobs' => collect($siteStatistics)->sum('total_job_creations'),
+                            'salaries' => collect($siteStatistics)->sum('total_salaries'),
+                        ];
+                    @endphp
+
                     <div class="card card-round">
                         <div class="card-header">
                             <div class="card-head-row card-tools-still-right">
@@ -753,21 +773,13 @@
                             <div class="card card-round bg-light mt-3">
                                 <div class="card-body py-3">
                                     <div class="row text-center">
-                                        @php
-                                            $totalStats = [
-                                                'students' => collect($siteStatistics)->sum('total_students'),
-                                                'entities' => collect($siteStatistics)->sum('total_entities'),
-                                                'jobs' => collect($siteStatistics)->sum('total_job_creations'),
-                                                'salaries' => collect($siteStatistics)->sum('total_salaries'),
-                                            ];
-                                        @endphp
                                         <div class="col-6 col-md-3 mb-2 mb-md-0">
                                             <h4 class="text-primary mb-0">{{ $totalStats['students'] }}</h4>
                                             <small class="text-muted">Total Students</small>
                                         </div>
                                         <div class="col-6 col-md-3 mb-2 mb-md-0">
                                             <h4 class="text-success mb-0">{{ $totalStats['entities'] }}</h4>
-                                            <small class="text-muted">Total Entities</small>
+                                            <small class="text-muted">Values Chaine</small>
                                         </div>
                                         <div class="col-6 col-md-3 mb-2 mb-md-0">
                                             <h4 class="text-warning mb-0">{{ $totalStats['jobs'] }}</h4>
@@ -938,7 +950,7 @@
                                 <div class="d-flex align-items-center">
                                     <span class="badge bg-white text-info me-2">
                                         <i class="fas fa-graduation-cap me-1"></i>
-                                        {{ $totalPromotions }} Promotions
+                                        {{ $totalStats['entities'] }}
                                     </span>
                                     <span class="badge bg-white text-info">
                                         <i class="fas fa-users me-1"></i>
@@ -948,7 +960,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            @if($promotionSummary->count() > 0)
+                            @if ($promotionSummary->count() > 0)
                                 @php
                                     $groupedPromotions = $promotionSummary->groupBy('num_promotion');
                                 @endphp
@@ -961,7 +973,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($groupedPromotions as $numPromotion => $sites)
+                                            @foreach ($groupedPromotions as $numPromotion => $sites)
                                                 <tr>
                                                     <td>
                                                         <div class="d-flex align-items-center">
@@ -970,7 +982,8 @@
                                                             </div>
                                                             <div>
                                                                 <h6 class="mb-0 fw-bold">{{ $numPromotion }}</h6>
-                                                                <small class="text-muted">Promotion {{ $numPromotion }}</small>
+                                                                <small class="text-muted">Promotion
+                                                                    {{ $numPromotion }}</small>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -979,12 +992,16 @@
                                                             <span class="badge bg-success rounded-pill me-2 fs-6">
                                                                 {{ $sites->sum('total_students') }}
                                                             </span>
-                                                            <small class="text-muted">students enrolled across all sites</small>
+                                                            <small class="text-muted">students enrolled across all
+                                                                sites</small>
                                                         </div>
                                                         <div class="mt-2">
                                                             <small class="text-muted">Sites: </small>
-                                                            @foreach($sites as $site)
-                                                                <span class="badge bg-secondary me-1">{{ $site->site_name }} ({{ $site->total_students }})</span>
+                                                            @foreach ($sites as $site)
+                                                                <span
+                                                                    class="badge bg-secondary me-1">{{ $site->site_name }}
+                                                                    ({{ $site->total_students }})
+                                                                </span>
                                                             @endforeach
                                                         </div>
                                                     </td>
@@ -1034,8 +1051,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                             @else
                                 <div class="text-center py-5">
                                     <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
@@ -1051,7 +1066,8 @@
                                     Updated: {{ now()->format('M j, Y H:i') }}
                                 </small>
                                 <div>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="window.location.reload()">
+                                    <button class="btn btn-sm btn-outline-primary me-2"
+                                        onclick="window.location.reload()">
                                         <i class="fas fa-sync-alt me-1"></i>Refresh
                                     </button>
                                     <a href="{{ route('promotions.index') }}" class="btn btn-sm btn-primary">

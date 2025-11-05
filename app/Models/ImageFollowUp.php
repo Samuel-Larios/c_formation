@@ -9,7 +9,7 @@ class ImageFollowUp extends Model
 {
     use HasFactory;
 
-    protected $table = 'image_follow_up';
+    protected $table = 'image_follow_ups';
 
     protected $fillable = [
         'follow_up_id',

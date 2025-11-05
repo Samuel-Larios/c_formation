@@ -75,76 +75,130 @@
             <!-- Salary Statistics -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <h3>Salary Statistics for Selected Promotion</h3>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Total Students in Promotion</h5>
-                                    <h2>{{ $totalStudentsInPromotion }}</h2>
+                    <div class="card border-info shadow-sm">
+
+                        <!-- Header -->
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-dollar-sign me-2"></i> Salary Statistics for Selected Promotion
+                            </h5>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="card-body">
+                            <div class="row text-center g-4">
+
+                                <!-- Total Students -->
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <div class="card-header bg-info text-white fw-semibold">
+                                            Total Students in Promotion
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 class="fw-bold text-info">{{ $totalStudentsInPromotion }}</h2>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Students with Salaries -->
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <div class="card-header bg-success text-white fw-semibold">
+                                            Students with Salaries
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 class="fw-bold text-success">{{ $studentsWithSalaries }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Students without Salaries -->
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <div class="card-header bg-warning text-dark fw-semibold">
+                                            Students without Salaries
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 class="fw-bold text-warning">{{ $studentsWithoutSalaries }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Salaries -->
+                                <div class="col-md-3 col-sm-6">
+                                    <div class="card shadow-sm border-0 h-100">
+                                        <div class="card-header bg-primary text-white fw-semibold">
+                                            Total Salaries
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 class="fw-bold text-primary">{{ $totalSalaries }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Students with Salaries</h5>
-                                    <h2>{{ $studentsWithSalaries }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Students without Salaries</h5>
-                                    <h2>{{ $studentsWithoutSalaries }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Total Salaries</h5>
-                                    <h2>{{ $totalSalaries }}</h2>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
+
 
             <!-- Percentage Achievement -->
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="card border-info shadow-sm">
+
+                        <!-- Header -->
                         <div class="card-header bg-info text-white">
-                            <h5 class="card-title mb-0"><i class="fas fa-percentage"></i> Salary Target Achievement (30%)
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-coins me-2"></i> Salary Target Achievement (30%)
                             </h5>
                         </div>
+
+                        <!-- Body -->
                         <div class="card-body">
                             <div class="row text-center">
-                                <div class="col-md-4">
-                                    <h5>Expected Students with Salaries</h5>
-                                    <h3 class="text-primary">{{ $expectedStudentsWithSalaries }}</h3>
+
+                                <!-- Expected Students -->
+                                <div class="col-md-4 col-sm-12 mb-3">
+                                    <div class="p-3 rounded shadow-sm border">
+                                        <h6 class="fw-semibold">Expected Students with Salaries</h6>
+                                        <h3 class="fw-bold text-primary">{{ $expectedStudentsWithSalaries }}</h3>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <h5>Actual Percentage</h5>
-                                    <h3 class="{{ $isReached ? 'text-success' : 'text-danger' }}">{{ $actualPercentage }}%
-                                    </h3>
+
+                                <!-- Actual Percentage -->
+                                <div class="col-md-4 col-sm-12 mb-3">
+                                    <div class="p-3 rounded shadow-sm border">
+                                        <h6 class="fw-semibold">Actual Percentage</h6>
+                                        <h3 class="fw-bold {{ $isReached ? 'text-success' : 'text-danger' }}">
+                                            {{ $actualPercentage }}%
+                                        </h3>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <h5>Difference</h5>
-                                    <h3 class="{{ $difference >= 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ $difference }}%</h3>
-                                    <small class="{{ $isReached ? 'text-success' : 'text-danger' }}">
-                                        {{ $isReached ? 'Target Reached' : 'Target Not Reached' }}
-                                    </small>
+
+                                <!-- Difference -->
+                                <div class="col-md-4 col-sm-12 mb-3">
+                                    <div class="p-3 rounded shadow-sm border">
+                                        <h6 class="fw-semibold">Difference</h6>
+                                        <h3 class="fw-bold {{ $difference >= 0 ? 'text-success' : 'text-danger' }}">
+                                            {{ $difference }}%
+                                        </h3>
+                                        <small
+                                            class="{{ $isReached ? 'text-success fw-semibold' : 'text-danger fw-semibold' }}">
+                                            {{ $isReached ? 'Target Reached' : 'Target Not Reached' }}
+                                        </small>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
+
 
             <!-- Histogram -->
             <div class="mb-4">
@@ -163,8 +217,8 @@
                     <input type="hidden" name="promotion" value="{{ request('promotion') }}">
                     <div class="col-md-3">
                         <label for="entreprise" class="form-label">Company</label>
-                        <input type="text" name="entreprise" value="{{ request('entreprise') }}" class="form-control"
-                            id="entreprise" placeholder="Filter by company">
+                        <input type="text" name="entreprise" value="{{ request('entreprise') }}"
+                            class="form-control" id="entreprise" placeholder="Filter by company">
                     </div>
                     <div class="col-md-3">
                         <label for="localisation" class="form-label">Location</label>

@@ -2,11 +2,11 @@
 
 namespace App\Exports;
 
-use App\Models\Salary;
+use App\Models\JobCreation;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class SalariesExport implements FromCollection, WithHeadings
+class JobCreationsExport implements FromCollection, WithHeadings
 {
     protected $siteId;
     protected $promotionNum;
@@ -22,7 +22,7 @@ class SalariesExport implements FromCollection, WithHeadings
      */
     public function collection()
     {
-        $query = Salary::with(['student.site', 'student.promotions']);
+        $query = JobCreation::with(['student.site', 'student.promotions']);
 
         if ($this->siteId) {
             $query->whereHas('student', function ($q) {
@@ -37,19 +37,14 @@ class SalariesExport implements FromCollection, WithHeadings
             });
         }
 
-        return $query->get()->map(function ($salary) {
+        return $query->get()->map(function ($jobCreation) {
             return [
-                'Student Name' => $salary->student->first_name . ' ' . $salary->student->last_name,
-                'Site' => $salary->student->site->designation ?? '',
-                'Promotion' => $salary->student->promotions->first()->num_promotion ?? '',
-                'Entreprise' => $salary->entreprise,
-                'Localisation' => $salary->localisation,
-                'Employeur' => $salary->employeur,
-                'Telephone' => $salary->tel,
-                'Suivit' => $salary->suivit,
-                'Suivit Observation' => $salary->suivit_observation,
-                'Visite' => $salary->visite,
-                'Visite Observation' => $salary->visite_observation,
+                'Student Name' => $jobCreation->student->first_name . ' ' . $jobCreation->student->last_name,
+                'Site' => $jobCreation->student->site->designation ?? '',
+                'Promotion' => $jobCreation->student->promotions->first()->num_promotion ?? '',
+                'Job Name' => $jobCreation->nom,
+                'Phone' => $jobCreation->tel,
+                'Gender' => $jobCreation->sexe,
             ];
         });
     }
@@ -60,14 +55,9 @@ class SalariesExport implements FromCollection, WithHeadings
             'Student Name',
             'Site',
             'Promotion',
-            'Entreprise',
-            'Localisation',
-            'Employeur',
-            'Telephone',
-            'Suivit',
-            'Suivit Observation',
-            'Visite',
-            'Visite Observation',
+            'Job Name',
+            'Phone',
+            'Gender',
         ];
     }
 }

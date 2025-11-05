@@ -52,6 +52,9 @@ class JobCreationController extends Controller
         $difference = 0;
         $isReached = false;
         $histogramData = ['students_with_jobs' => 0, 'students_without_jobs' => 0];
+        $jobCreatorsByGender = [];
+        $studentsWithoutJobsByGender = [];
+        $studentsWithJobsByGender = [];
 
         if ($promotionId) {
             // Distribution par genre des étudiants de la promotion sélectionnée
@@ -91,8 +94,39 @@ class JobCreationController extends Controller
             }
             $studentsWithJobs = $jobsQuery->distinct('students.id')->count('students.id');
 
+            // Compter les étudiants avec jobs par sexe
+            $studentsWithJobsByGender = DB::table('job_creations')
+                ->join('students', 'job_creations.student_id', '=', 'students.id')
+                ->join('promotion_apprenant', 'students.id', '=', 'promotion_apprenant.student_id')
+                ->join('promotions', 'promotion_apprenant.promotion_id', '=', 'promotions.id')
+                ->where('promotions.num_promotion', $promotionId);
+            if (!$aggregateAcrossSites) {
+                $studentsWithJobsByGender->where('promotion_apprenant.site_id', $user->site_id);
+            }
+            $studentsWithJobsByGender = $studentsWithJobsByGender
+                ->selectRaw('students.sexe, COUNT(DISTINCT students.id) as count')
+                ->groupBy('students.sexe')
+                ->pluck('count', 'sexe')
+                ->toArray();
+
             // Étudiants sans jobs
             $studentsWithoutJobs = $totalStudentsInPromotion - $studentsWithJobs;
+
+            // Compter les étudiants sans jobs par sexe
+            $studentsWithoutJobsByGender = DB::table('promotion_apprenant')
+                ->join('students', 'promotion_apprenant.student_id', '=', 'students.id')
+                ->join('promotions', 'promotion_apprenant.promotion_id', '=', 'promotions.id')
+                ->leftJoin('job_creations', 'students.id', '=', 'job_creations.student_id')
+                ->where('promotions.num_promotion', $promotionId)
+                ->whereNull('job_creations.id');
+            if (!$aggregateAcrossSites) {
+                $studentsWithoutJobsByGender->where('promotion_apprenant.site_id', $user->site_id);
+            }
+            $studentsWithoutJobsByGender = $studentsWithoutJobsByGender
+                ->selectRaw('students.sexe, COUNT(DISTINCT students.id) as count')
+                ->groupBy('students.sexe')
+                ->pluck('count', 'sexe')
+                ->toArray();
 
             // Total des créations de jobs
             $totalJobsQuery = DB::table('job_creations')
@@ -116,6 +150,21 @@ class JobCreationController extends Controller
                 'students_with_jobs' => $studentsWithJobs,
                 'students_without_jobs' => $studentsWithoutJobs
             ];
+
+            // Compter les créateurs d'emplois par sexe
+            $jobCreatorsByGender = DB::table('job_creations')
+                ->join('students', 'job_creations.student_id', '=', 'students.id')
+                ->join('promotion_apprenant', 'students.id', '=', 'promotion_apprenant.student_id')
+                ->join('promotions', 'promotion_apprenant.promotion_id', '=', 'promotions.id')
+                ->where('promotions.num_promotion', $promotionId);
+            if (!$aggregateAcrossSites) {
+                $jobCreatorsByGender->where('promotion_apprenant.site_id', $user->site_id);
+            }
+            $jobCreatorsByGender = $jobCreatorsByGender
+                ->selectRaw('job_creations.sexe, COUNT(DISTINCT students.id) as count')
+                ->groupBy('job_creations.sexe')
+                ->pluck('count', 'sexe')
+                ->toArray();
         }
 
         // Calculer le résumé par étudiant : afficher l'étudiant une fois et lister les employeurs et le nombre de personnes qui travaillent avec lui
@@ -128,7 +177,7 @@ class JobCreationController extends Controller
         // et qui ont des étudiants inscrits
         $promotions = \App\Models\Promotion::select('num_promotion')->distinct()->get();
 
-        return view('job-creations.index', compact('jobCreations', 'promotions', 'studentGenderCounts', 'promotionId', 'studentJobCounts', 'totalStudents', 'totalStudentsInPromotion', 'studentsWithJobs', 'studentsWithoutJobs', 'totalJobCreations', 'expectedStudentsWithJobs', 'actualPercentage', 'difference', 'isReached', 'histogramData', 'aggregateAcrossSites'));
+        return view('job-creations.index', compact('jobCreations', 'promotions', 'studentGenderCounts', 'promotionId', 'studentJobCounts', 'totalStudents', 'totalStudentsInPromotion', 'studentsWithJobs', 'studentsWithoutJobs', 'totalJobCreations', 'expectedStudentsWithJobs', 'actualPercentage', 'difference', 'isReached', 'histogramData', 'aggregateAcrossSites', 'jobCreatorsByGender', 'studentsWithoutJobsByGender', 'studentsWithJobsByGender'));
     }
 
     // Afficher le formulaire pour créer un job creation

@@ -4,36 +4,58 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Student;
-use Livewire\WithPagination;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class StudentPasswords extends Component
 {
-    use WithPagination;
+    public $students = [];
+    public $selectedStudent = null;
+    public $newPassword = '';
+    public $confirmPassword = '';
 
-    public $search = '';
-
-    protected $queryString = ['search'];
-
-    public function updatingSearch()
+    public function mount()
     {
-        $this->resetPage();
+        $this->loadStudents();
+    }
+
+    public function loadStudents()
+    {
+        $this->students = Student::all();
+    }
+
+    public function selectStudent($studentId)
+    {
+        $this->selectedStudent = Student::find($studentId);
+        $this->newPassword = '';
+        $this->confirmPassword = '';
+    }
+
+    public function updatePassword()
+    {
+        $this->validate([
+            'newPassword' => 'required|min:8',
+            'confirmPassword' => 'required|same:newPassword',
+        ]);
+
+        if ($this->selectedStudent) {
+            $this->selectedStudent->password = Hash::make($this->newPassword);
+            $this->selectedStudent->save();
+
+            Session::flash('message', 'Mot de passe mis à jour avec succès.');
+            $this->resetForm();
+        }
+    }
+
+    public function resetForm()
+    {
+        $this->selectedStudent = null;
+        $this->newPassword = '';
+        $this->confirmPassword = '';
     }
 
     public function render()
     {
-        $students = Student::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('first_name', 'like', '%' . $this->search . '%')
-                        ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%')
-                        ->orWhere('contact', 'like', '%' . $this->search . '%');
-                });
-            })
-            ->orderBy('first_name')
-            ->paginate(10);
-
-        return view('livewire.student-passwords', compact('students'))
-            ->layout('base_admin');
+        return view('livewire.student-passwords');
     }
 }
